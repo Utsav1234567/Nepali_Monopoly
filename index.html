@@ -1,0 +1,3128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Monopoly Card Drawer</title>
+
+<style>
+
+
+/* =========================================
+   GLOBAL COLORS
+========================================= */
+
+
+
+:root {
+    --restaurant-color: #FFAC1C;
+    --pier-color: #BD9168;
+    --garden-color: #447900;
+    --casino-color: #E1C16E;
+    --radio-color: #c56cf0;
+
+    --chance-color: #f08080;
+    --community-color: #00bfff;
+
+    --brown-color: #8B4513;
+    --lightblue-color: #00bfff;
+    --pink-color: #FF69B4;
+    --orange-color: #FFA500;
+    --red-color: #FF0000;
+    --yellow-color: #FFD700;
+    --green-color: #228B22;
+    --purple-color: #6A0DAD;
+
+    --transport-color: #000;
+    --state-color: #777;
+
+    --tint-strength: 30%;
+}
+
+
+
+
+
+/* =========================================
+   BACKGROUND
+========================================= */
+body {
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background: linear-gradient(135deg, #29a6dd, #74d8b3, #f7f09b);
+    background-size: 400% 400%;
+    animation: bgMove 18s ease infinite;
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+/* =========================================
+   MAIN LAYOUT (Left | Center | Right)
+========================================= */
+.layout {
+    display: grid;
+    grid-template-columns: 35vh 55% 35vh;
+    gap: 40px;
+    height: calc(100vh - 70px);
+    overflow: hidden;
+    align-items: start;
+}
+
+/* LEFT PANEL */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+margin-top: 5vh;
+}
+
+/* CENTER PANEL */
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4vh;
+}
+
+/* RIGHT PANEL */
+.far-right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16vh;
+right: -2vh;
+}
+
+/* =========================================
+   WELCOME CARD
+========================================= */
+#welcomeCard {
+    width: 100%;
+    
+    height: 60vh;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+overflow: hidden;  
+}
+
+#welcomeTitle {
+    font-size: clamp(5vh, 6vh, 7vh);
+    text-align: center;
+    margin: 5px 0 15px;
+    color: #fff;
+    text-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+}
+
+#welcomeIcons {
+    font-size: clamp(4vh, 5vh, 8vh);
+}
+
+#welcomeText {
+    font-size: clamp(2vh, 3vh, 4vh);
+    color: #444;
+}
+
+/* =========================================
+   BUTTONS + ANIMATIONS
+========================================= */
+.draw-btn, .big-btn {
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    transition: 0.2s ease;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+height: 13vh;
+    font-size: 3.5vh;
+width: 30vh;
+}
+
+
+
+.draw-btn:hover,
+.big-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+.icon {
+    font-size: 4vh; /* All icon size */
+}
+
+/* Button colors */
+.restaurant-btn { background: var(--restaurant-color); color:#4b2c00; }
+.pier-btn       { background: var(--pier-color); }
+.garden-btn     { background: var(--garden-color); }
+.casino-btn     { background: var(--casino-color); }
+.radio-btn      { background: var(--radio-color); }
+
+
+/* Chance/Community bottom buttons */
+.bottom-buttons {
+    display: flex;
+    gap: 3vh;
+}
+
+.big-btn {
+    width: 45vh;     /* chance and community buttons */
+}
+
+
+.far-right-panel .draw-btn {
+    height: 13vh;   /* Radio buttons */
+width: 30vh;
+margin: 12vh;
+}
+
+
+
+
+.big-chance { background: var(--chance-color); }
+.big-community { background: var(--community-color); }
+
+/* =========================================
+   POPUPS (with animation)
+========================================= */
+.modal-overlay {
+gap: 2vh !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    width: 98vh;
+height:32vh;
+
+    max-height: 45vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    animation: pop 0.2s ease-out;
+    position: relative;
+}
+
+@keyframes pop {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    font-size: 4vh;
+    cursor: pointer;
+}
+
+/* =========================================
+   SOUND BUTTON
+========================================= */
+.sound-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 4vh;
+    background: black;
+    border: 2px solid white;
+    width: 7.5vh;
+    height: 6.5vh;
+    border-radius: 50%;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+
+}
+
+.sound-btn:hover {
+    transform: scale(1.1);
+}
+
+
+
+#soundToggle {
+    right: 1.5vh; /* sound button position */
+}
+
+
+
+
+
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 1100px) {
+    .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .draw-btn {
+        width: 45%;
+    }
+
+    .bottom-buttons {
+        flex-wrap: wrap;
+    }
+
+    .far-right-panel {
+        padding-top: 10px;
+    }
+}
+
+
+
+
+
+
+
+
+
+.modal.tinted {
+    background: linear-gradient(
+        -135deg,
+        color-mix(in srgb, var(--tint) var(--tint-strength), white) 0%,
+        white 100%
+    );
+}
+
+
+.popup-chance     { border-left: 18px solid var(--chance-color);     --tint: var(--chance-color); }
+.popup-community  { border-left: 18px solid var(--community-color);  --tint: var(--community-color); }
+.popup-restaurant { border-left: 18px solid var(--restaurant-color); --tint: var(--restaurant-color); }
+.popup-pier       { border-left: 18px solid var(--pier-color);       --tint: var(--pier-color); }
+.popup-garden     { border-left: 18px solid var(--garden-color);     --tint: var(--garden-color); }
+.popup-casino     { border-left: 18px solid var(--casino-color);     --tint: var(--casino-color); }
+.popup-radio      { border-left: 18px solid var(--radio-color);      --tint: var(--radio-color); }
+
+
+.radio-border-brown      { border-left: 18px solid var(--brown-color);      --tint: var(--brown-color); }
+.radio-border-lightblue  { border-left: 18px solid var(--lightblue-color);  --tint: var(--lightblue-color); }
+.radio-border-pink       { border-left: 18px solid var(--pink-color);       --tint: var(--pink-color); }
+.radio-border-orange     { border-left: 18px solid var(--orange-color);     --tint: var(--orange-color); }
+.radio-border-red        { border-left: 18px solid var(--red-color);        --tint: var(--red-color); }
+.radio-border-yellow     { border-left: 18px solid var(--yellow-color);     --tint: var(--yellow-color); }
+.radio-border-green      { border-left: 18px solid var(--green-color);      --tint: var(--green-color); }
+.radio-border-purple     { border-left: 18px solid var(--purple-color);     --tint: var(--purple-color); }
+
+.radio-border-transport  { border-left: 18px solid #000;                     --tint: #000; }
+.radio-border-state      { border-left: 18px solid #777;                     --tint: #777; }
+
+
+
+
+
+
+
+.layout,
+.center-panel,
+.far-right-panel {
+    overflow: visible !important;
+}
+
+.far-right-panel {
+    position: relative;
+}
+
+
+
+
+/* GLOBAL POPUP FONTS (ALL CARDS) */
+.modal h2 {font-size: clamp(4vh, 5vh, 6vh);}
+.modal p {font-size: clamp(3vh, 4vh, 5vh);}
+.modal.popup-radio-dice {height: 30vh; margin: 2px;}
+.modal.popup-radio-dice h2 {font-size: clamp(4vh, 5vh, 6vh)}
+.modal.popup-radio-dice p {font-size: clamp(2.2vh, 2.35vh, 2.5vh);line-height: 1.3 }
+
+
+.modal.popup-radio-dice h2 {
+    margin-top: 0 !important; 
+margin-bottom: 0 !important;        /* removes default h2 margin */
+    padding-top: 0 !important;       /* ensures no padding either */
+}
+
+
+
+
+
+
+
+/* RADIO PROPERTY POPUP — set height to 20vh */
+.modal[class*="radio-border-"] {
+    height: 16vh !important;
+margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   FLOATING WELCOME CARD ANIMATION
+========================================= */
+@keyframes welcomeFloat {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.floating-welcome {
+  animation: welcomeFloat 3s ease-in-out infinite;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   MINI 3D DICE FOR WELCOME PANEL
+========================================= */
+
+#welcomeCard .dice-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 4.5vh;
+    margin: 3vh;
+margin-top: 4vh;
+    position: relative;
+    z-index: -1;
+}
+
+#welcomeCard .dice-scene {
+    width: 8vh;
+    height: 8vh;
+
+}
+
+#welcomeCard .cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+#welcomeCard .cube .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: #f9fafb;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, .12);
+}
+
+#welcomeCard .pip {
+    width: 23%;
+    height: 23%;
+    background: #000;
+    border-radius: 50%;
+}
+
+#welcomeCard .pips {
+    position: relative;
+    width: 60%;
+    height: 60%;
+}
+
+#welcomeCard .pips .pip {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+/* pip layouts */
+#welcomeCard .pips1 .pip:nth-child(1) { top: 50%; left: 50%; }
+#welcomeCard .pips2 .pip:nth-child(1) { top: 20%; left: 20%; }
+#welcomeCard .pips2 .pip:nth-child(2) { top: 80%; left: 80%; }
+#welcomeCard .pips3 .pip:nth-child(1) { top: 20%; left: 20%; }
+#welcomeCard .pips3 .pip:nth-child(2) { top: 50%; left: 50%; }
+#welcomeCard .pips3 .pip:nth-child(3) { top: 80%; left: 80%; }
+#welcomeCard .pips4 .pip:nth-child(1) { top: 20%; left: 20%; }
+#welcomeCard .pips4 .pip:nth-child(2) { top: 20%; left: 80%; }
+#welcomeCard .pips4 .pip:nth-child(3) { top: 80%; left: 20%; }
+#welcomeCard .pips4 .pip:nth-child(4) { top: 80%; left: 80%; }
+#welcomeCard .pips5 .pip:nth-child(1) { top: 20%; left: 20%; }
+#welcomeCard .pips5 .pip:nth-child(2) { top: 20%; left: 80%; }
+#welcomeCard .pips5 .pip:nth-child(3) { top: 80%; left: 20%; }
+#welcomeCard .pips5 .pip:nth-child(4) { top: 80%; left: 80%; }
+#welcomeCard .pips5 .pip:nth-child(5) { top: 50%; left: 50%; }
+#welcomeCard .pips6 .pip:nth-child(1) { top: 20%; left: 20%; }
+#welcomeCard .pips6 .pip:nth-child(2) { top: 20%; left: 80%; }
+#welcomeCard .pips6 .pip:nth-child(3) { top: 50%; left: 20%; }
+#welcomeCard .pips6 .pip:nth-child(4) { top: 50%; left: 80%; }
+#welcomeCard .pips6 .pip:nth-child(5) { top: 80%; left: 20%; }
+#welcomeCard .pips6 .pip:nth-child(6) { top: 80%; left: 80%; }
+
+
+/* Correct 3D face orientations (taken from original file) */
+#welcomeCard .cube .f1 { transform: rotateY(0deg)    translateZ(4vh); }
+#welcomeCard .cube .f2 { transform: rotateY(90deg)   translateZ(4vh); }
+#welcomeCard .cube .f3 { transform: rotateY(180deg)  translateZ(4vh); }
+#welcomeCard .cube .f4 { transform: rotateY(-90deg)  translateZ(4vh); }
+#welcomeCard .cube .f5 { transform: rotateX(90deg)   translateZ(4vh); }
+#welcomeCard .cube .f6 { transform: rotateX(-90deg)  translateZ(4vh); }
+
+
+
+
+/* Special Monopoly face (replaces pip with an image) */
+#welcomeCard .special-face {
+    background: #ffffff;       /* white dice face */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#welcomeCard .mono-face-icon {
+    width: 85%;                /* adjust size */
+    height: 85%;
+    object-fit: contain;
+}
+
+
+
+#welcomeCard {
+   border: 1vh solid transparent;
+   border-radius: 20vh;
+   background-clip: padding-box;
+}
+
+#transportStage{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+overflow:hidden;
+pointer-events:none;
+z-index:-2;
+}
+
+
+
+
+
+
+
+/* =========================================
+   MONEY RAIN ANIMATION
+========================================= */
+
+#welcomeCard .money-rain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -3; /* above background, below dice */
+}
+
+#welcomeCard .money-drop {
+    position: absolute;
+    width: 6vh;
+    height: auto;
+    opacity: 0;
+    pointer-events: none;
+    animation: moneyFall 6s linear forwards;
+}
+
+@keyframes moneyFall {
+    0% {
+        transform: translateY(-10vh) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    40% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(70vh) rotate(90deg) scale(0.9);
+        opacity: 0;
+    }
+}
+
+
+
+
+
+
+/* Wrapper for banner + guy */
+.monopoly-wrapper {
+    position: relative;       /* allows absolute positioning inside */
+    width: calc(fit-content + 15vh);
+    margin: 0 auto;
+    margin-top: -15vh;
+}
+
+/* Monopoly Banner */
+.monopoly-banner {
+    padding: 1vh 10vh;
+    background: #c20000;
+    color: white;
+    font-family: "Arial Black", "Helvetica Black", sans-serif;
+    font-size: 6vh;
+    font-weight: 900;
+    letter-spacing: 0.6vh;
+
+    border-radius: 1.2vh;
+    border: 0.5vh solid #000;
+    text-transform: uppercase;
+    text-align: center;
+
+
+    box-shadow:
+       0 0.4vh 1vh rgba(0,0,0,0.35),
+       inset 0 0 0.8vh rgba(255,255,255,0.35);
+}
+
+/* Monopoly Guy overlapping the banner */
+.monopoly-guy-overlap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(130%) translateY(7%); /* X moves sideways, Y lifts */
+    bottom: 0;
+    height: 14vh;
+    z-index: 10;
+    pointer-events: none;
+}
+
+
+
+/* PNG tile icons */
+.tile-icon {
+    width: 8vh;
+    height: 8vh;
+    object-fit: contain;
+    margin-bottom: 0vh;
+    pointer-events: none;
+}
+
+
+
+
+
+/* =====================================================================
+   CAR
+===================================================================== */
+
+.car img {
+    width: 100%;
+}
+
+/* smoke container */
+.car-smoke-container {
+    position: absolute;
+    top: 3.5vh;
+    left: 0vh;
+    pointer-events: none;
+}
+
+/* smoke puff */
+.car-smoke {
+    position: absolute;
+    width: 1vh;
+    height: 1vh;
+    background: rgba(180,180,180,1);
+    border-radius: 50%;
+    animation: carSmokePuff 2.4s ease-out forwards;
+}
+
+@keyframes carSmokePuff {
+    0%   { transform: translateX(-1vh) translateY(0vh) scale(0.8); opacity: 0.9; }
+    40%  { opacity: 1; }
+    100% { transform: translateX(-12vh) translateY(-1.7vh) scale(2.5); opacity: 0; }
+}
+
+@keyframes carCycle {
+    0% {left: -30vh;transform: scaleX(1) rotate(0deg); /* NO wheelie */}
+    40% {left: 110%;  transform: scaleX(1) rotate(0deg); /* stays flat */}
+    /* -----------------------
+       TURN AROUND (very small tilt)
+       ----------------------- */
+    45% {left: 110%; transform: scaleX(1) rotate(0deg);  /* tiny tilt, optional */ }
+    50% {left: 110%;transform: scaleX(-1) rotate(0deg); /* face left */}
+    /* -----------------------
+       MOVE LEFT (slow, uniform)
+       ----------------------- */
+    90% {left: -30vh;transform: scaleX(-1) rotate(0deg); /* stays flat */}
+    /* -----------------------
+       TURN AGAIN BACK TO RIGHT
+       ----------------------- */
+    95% { left: -30vh;transform: scaleX(-1) rotate(0deg);}
+    100% {left: -30vh;transform: scaleX(1) rotate(0deg); /* ready again */ }
+}
+
+
+.car_tread{
+    width:1.7vh;
+    height:1.7vh;
+    position:absolute;
+    bottom:1vh;
+    border-radius:50%;
+    background:radial-gradient(circle,#000 0.5 50%,#777 40% 60%,#000 75% 100%);
+    animation:car_treadSpin .35s linear infinite;
+    z-index:2;
+}
+
+
+.car_tread::before,
+.car_tread::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    background:#222;
+    transform:translate(-50%,-50%);}
+
+.car_tread::before{width:3px;height:70%;box-shadow:
+        -1px -1px 0 0 #222,
+         1px  1px 0 0 #222; }
+
+.car_tread::after{width:70%;height:3px;box-shadow:
+        -1px  1px 0 0 #222,
+         1px -1px 0 0 #222;  }
+
+
+
+@keyframes car_treadSpin{
+0%{transform:rotate(0);}
+100%{transform:rotate(360deg);}
+}
+
+.car .car_tread:nth-child(4){left:1.9vh;}
+.car .car_tread:nth-child(5){left:10.7vh;}
+
+
+
+.car-track-shadow{
+position:absolute;
+bottom:.6vh;
+left:2vh;
+width:8vh;
+height:.4vh;
+background:rgba(0,0,0,.25);
+filter:blur(0.2vh);
+border-radius:.3vh;
+z-index:0;
+}
+@keyframes carTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-2vh 0;}
+}
+
+
+
+/* =====================================================================
+   SCOOTER
+===================================================================== */
+
+.scooter {
+    transform-origin: 4vh 100%;
+}
+
+.scooter img {
+    width: 100%;
+}
+
+.scooter-smoke-container {
+    position: absolute;
+    top: 6vh;
+    left: 0vh;
+    pointer-events: none;
+}
+
+/* smoke puff */
+.scooter-smoke {
+    position: absolute;
+    width: 0.5vh;
+    height: 0.5vh;
+    background: rgba(180,180,180,0.3);
+    border-radius: 50%;
+    animation: carSmokePuff 2.4s ease-out forwards;
+}
+
+@keyframes scooterSmokePuff {
+    0%   { transform: translateX(0) translateY(0) scale(0.7); opacity: 1; }
+    100% { transform: translateX(-6vh) translateY(-1vh) scale(1.7); opacity: 0; }
+}
+
+@keyframes scooterCycle{
+0%{left:-30vh;transform:scaleX(1)rotate(-18deg);}
+5%{left:-10vh;transform:scaleX(1)rotate(0deg);}
+10%{left:10vh;transform:scaleX(1)rotate(-18deg);}
+20%{left:40vh;transform:scaleX(1)rotate(-18deg);}
+25%{left:25vh;transform:scaleX(1)rotate(0deg);}
+55%{left:210vh;transform:scaleX(1)rotate(0deg);}
+60%{left:210vh;transform:scaleX(-1)rotate(0deg);}
+90%{left:0vh;transform:scaleX(-1)rotate(0deg);}
+100%{left:-50vh;transform:scaleX(-1)rotate(0deg);}
+}
+
+
+
+.scooter_tread{
+    width:1.73vh;
+    height:1.73vh;
+    position:absolute;
+    bottom:1.25vh;
+    border-radius:50%;
+    background: radial-gradient(circle,#444 0 40%, #bbb 15% 10%, #444 75% 100%);
+    animation:scooter_treadSpin .35s linear infinite;
+    z-index:2;
+}
+
+
+.scooter_tread::before,
+.scooter_tread::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    background:#444;
+    transform:translate(-50%,-50%);}
+
+.scooter_tread::before{width:3px;height:70%;box-shadow:
+        -1px -1px 0 0 #444,
+         1px  1px 0 0 #444; }
+
+.scooter_tread::after{width:70%;height:3px;box-shadow:
+        -1px  1px 0 0 #444,
+         1px -1px 0 0 #444;  }
+
+
+
+@keyframes scooter_treadSpin{
+0%{transform:rotate(0);}
+100%{transform:rotate(360deg);}
+}
+
+.scooter .scooter_tread:nth-child(4){left:2vh;}
+.scooter .scooter_tread:nth-child(5){left:11.2vh;}
+
+
+
+
+
+.scooter-track-shadow{
+position:absolute;
+bottom:.6vh;
+left:2vh;
+width:8vh;
+height:.4vh;
+background:rgba(0,0,0,.3);
+filter:blur(0.3vh);
+border-radius:.35vh;
+z-index:0;
+}
+@keyframes scooterTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-2vh 0;}
+}
+
+
+/* =====================================================================
+   TANK
+===================================================================== */
+
+.tank img {
+    width: 100%;
+}
+
+.tank-smoke-container {
+    position: absolute;
+    top: 7vh;
+    left: 1vh;
+}
+
+.tank-smoke {
+    position: absolute;
+    width: 1.5vh;
+    height: 1.5vh;
+    background: rgba(80,80,80,0.8);
+    border-radius: 50%;
+    animation: tankSmokePuff 3s ease-out forwards;
+}
+
+@keyframes tankSmokePuff {
+    0%   { transform: translateX(-2vh) translateY(0vh) scale(0.8); opacity: 1; }
+    100% { transform: translateX(-14vh) translateY(-2vh) scale(3); opacity: 0; }
+}
+
+@keyframes tankCycle {
+    0%   { left: -30vh; transform: scaleX(1); }
+    45%  { left: 120vh; transform: scaleX(1); }
+    50%  { transform: scaleX(-1); }
+    95%  { left: -30vh; transform: scaleX(-1); }
+    100% { transform: scaleX(1); }
+}
+
+.tread{
+    width:3vh;
+    height:3vh;
+    position:absolute;
+    bottom:1.2vh;
+    border-radius:50%;
+    background:radial-gradient(circle,#000 0 30%,#777 31% 60%,#000 61% 100%);
+    animation:treadSpin .35s linear infinite;
+    z-index:2;
+}
+
+
+.tread::before,
+.tread::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    background:#222;
+    transform:translate(-50%,-50%);}
+
+.tread::before{width:3px;height:70%;box-shadow:
+        -1px -1px 0 0 #222,
+         1px  1px 0 0 #222; }
+
+.tread::after{width:70%;height:3px;box-shadow:
+        -1px  1px 0 0 #222,
+         1px -1px 0 0 #222;  }
+
+
+
+@keyframes treadSpin{
+0%{transform:rotate(0);}
+100%{transform:rotate(360deg);}
+}
+
+.tank .tread:nth-child(4){left:1.7vh;}
+.tank .tread:nth-child(5){left:4.65vh;}
+.tank .tread:nth-child(6){left:7.6vh;}
+.tank .tread:nth-child(7){left:10.4vh;}
+.tank .tread:nth-child(8){left:13.35vh;}
+
+
+
+.tank-track-shadow{
+position:absolute;
+bottom:0;
+left:.2vh;
+width:15vh;
+height:.8vh;
+background:rgba(0,0,0,.4);
+filter:blur(0.3vh);
+border-radius:1vh;
+z-index:0;
+}
+@keyframes tankTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-3vh 0;}
+}
+
+
+
+
+
+
+
+
+/* ==========================
+   BOOMERANG HAT VEHICLE
+========================== */
+
+.vehicle.boomerang-hat {
+    width: 10vh;      /* adjust as needed */
+    height: 10vh;
+    position: absolute;
+    left: -40vh;
+    bottom: 4vh;
+    opacity: 0;
+    z-index: -1;
+}
+
+.hatWrap {
+    position:absolute;
+    width:200px;
+    height:200px;
+    transform-style:preserve-3d;
+}
+
+.hatWrap .hat {
+    position:absolute;
+    width:180px;
+    left:0;
+    top:0;
+}
+
+.hatWrap .hatShadow {
+    position:absolute;
+    left:40px;
+    top:130px;
+    width:120px;
+    height:40px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.35);
+    filter:blur(8px);
+    transform-origin:center;
+    z-index:-1;
+}
+
+
+
+
+
+/* =====================================================================
+   FERRY
+===================================================================== */
+
+.ferry-wrapper {
+    position: absolute;
+    bottom: 20vh;
+    width: 26vh;
+    left: -30vh;
+    opacity: 0;
+z-index:4;
+}
+.ferry {
+    width: 26vh;
+z-index:4;
+}
+
+.ferry-smoke-container {
+    position: absolute;
+    top: -0.2vh;
+    left: 8vh;
+}
+
+.ferry-smoke {
+    position: absolute;
+    width: 2vh;
+    height: 2vh;
+    border-radius: 50%;
+    background: rgba(200,200,200,0.5);
+    animation: smokePuff 2s ease-out forwards;
+}
+
+@keyframes smokePuff {
+    0%   { transform: translateX(-2vh) translateY(0vh) scale(0.8); opacity: 1; }
+    100% { transform: translateX(-14vh) translateY(-2vh) scale(3); opacity: 0; }
+}
+
+@keyframes ferryCycle {
+    0%   { left:-40vh; transform:scaleX(1); }
+    50%  { left:120vh; transform:scaleX(1); }
+    55%  { transform:scaleX(-1); }
+    100% { transform:scaleX(-1); }
+}
+@keyframes ferryBob {
+    0%,100%{ bottom:20vh }
+    50%{ bottom:22vh }
+}
+
+
+.ferry-wake{
+position:absolute;
+bottom:-1vh;
+left:-4vh;
+width:32vh;
+height:2vh;
+background:repeating-linear-gradient(90deg,rgba(0, 158, 248,.7) 0 .7vh,rgba(0, 158, 230, 1) .7vh 1.4vh);
+border-radius:1vh;
+opacity:1;
+filter:blur(1.3vh);
+animation:ferryWakeMove .5s linear infinite;
+z-index:0;
+}
+@keyframes ferryWakeMove{
+0%{background-position:0 0;}
+100%{background-position:-3vh 0;}
+}
+
+
+/* ============================
+   WATER ANIMATION LAYER
+============================ */
+#waterStage{
+    position:absolute;
+    bottom:-2vh;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:0;
+    z-index:-1;
+    overflow:hidden;
+}
+
+#waterStage .water{
+    position:absolute;      /* fixed, you typed position:-1vh by mistake */
+    width:140%;
+    height:200px;
+    left:-20%;
+  bottom:-150px;
+    height:260px;            /* LOWER starting water line */
+    overflow:hidden;
+    animation:waterLevel 6s ease-in-out forwards;
+}
+
+
+#waterStage .wave{
+position:absolute;
+width:200%;
+height:200%;
+left:-50%;
+top:20px;
+background:radial-gradient(circle at 50% 10%,rgba(255,255,255,.12),rgba(0,0,0,0) 60%),
+linear-gradient(to bottom,#1e6ea6 0%,#0d4f7d 60%,#073153 100%);
+border-radius:55% 45% 0 0;
+animation:hill 6s ease-in-out infinite;
+}
+
+#waterStage .shadow{
+position:absolute;
+top:110px;
+width:200%;
+height:60px;
+left:-50%;
+
+filter:blur(10px);
+animation:hill 6s ease-in-out infinite;
+}
+
+@keyframes hill{
+0%{transform:translateX(0) translateY(0) scaleX(0.9);}
+50%{transform:translateX(-8%) translateY(-6px) scaleX(1.08);}
+100%{transform:translateX(0) translateY(0) scaleX(1.05);}
+}
+
+@keyframes waterLevel{
+0%{transform:translateY(10px);}
+30%{transform:translateY(-10px);}
+50%{transform:translateY(-14px);}
+70%{transform:translateY(-10px);}
+90%{transform:translateY(-13px);}
+100%{transform:translateY(-10px);}
+}
+
+
+
+@keyframes waterLevelDown {
+    0%   { transform: translateY(10px); }
+    100% { transform: translateY(400px); }
+}
+
+
+
+
+/* ============================
+   All vehicle
+============================ */
+.vehicle {
+    width:12vh;        /* MUCH better scale inside welcome card */
+    bottom:-0.1vh;        /* sits naturally on welcome card floor */
+    left:-20vh;        /* keeps vehicles fully hidden until animation starts */
+    opacity:0;
+    position:absolute;
+    pointer-events:none;
+    z-index:1;
+}
+.vehicle.car { width:14vh; }
+.vehicle.scooter { width:14vh; }
+.vehicle.tank { width:18vh; }
+.vehicle.ferry-wrapper { width:26vh; bottom:2vh !important; z-index:400;}
+.vehicle.boomerang-hat { width:14vh; bottom:5vh !important; }
+
+
+
+
+/* ============================
+      PARROT NPC STYLES
+============================ */
+
+
+#parrot {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    transform-origin: center;
+    pointer-events: none;
+    z-index: 9999;
+    animation: bobbing 3.5s ease-in-out infinite;
+}
+
+@keyframes bobbing {
+    0%   { transform: translateY(0px); }
+    50%  { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes flap {
+    0% { transform: rotateZ(0deg); }
+    50% { transform: rotateZ(20deg); }
+    100% { transform: rotateZ(0deg); }
+}
+
+.wing {
+    transform-origin: top center;
+    animation: flap 0.35s ease-in-out infinite;
+}
+
+@keyframes eyeLook {
+    0%   { transform: translate(0,0); }
+    25%  { transform: translate(2px,1px); }
+    50%  { transform: translate(-2px,0px); }
+    75%  { transform: translate(1px,-2px); }
+    100% { transform: translate(0,0); }
+}
+
+.pupil {
+    animation: eyeLook 2.2s infinite ease-in-out;
+}
+
+@keyframes jump {
+    0%   { transform: translateY(0); }
+    40%  { transform: translateY(-30vh); }
+    100% { transform: translateY(0); }
+}
+
+
+
+#parrot { z-index: 10 !important; }
+
+
+@keyframes hoverShake {
+    0%   { transform: translateY(-2px) translateX(0px); }
+    50%  { transform: translateY(1px) translateX(2px); }
+    100% { transform: translateY(-2px) translateX(0px); }
+}
+
+
+
+.modal-overlay,
+.modal,
+#popupContainer {
+    z-index: 100000 !important;
+}
+
+
+
+
+#eventLog {
+    position: absolute;
+    top: 12vh;
+    right: 5vh;
+    width: 45vh;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 2vh;
+    padding: 2vh;
+    box-shadow: 0 0 15px rgba(0,0,0,.3);
+    font-size: 2vh;
+    z-index: 999999;
+    transition: opacity 0.3s ease;
+}
+
+#eventLog.hidden {
+    display: none;
+}
+
+.log-group h3 {
+    margin:0 0 1vh 0;
+    padding:0.5vh 1vh;
+    border-radius:1vh;
+    font-size:2vh;
+}
+
+.log-group ul {
+    margin:0 0 2vh 1vh;
+    padding:0;
+    list-style-type:disc;
+}
+
+/* category header colors */
+.log-group.community h3  { background: var(--community-color);  color:white; }
+.log-group.chance h3     { background: var(--chance-color);     color:white; }
+.log-group.radio h3      { background: var(--radio-color);      color:white; }
+.log-group.restaurant h3 { background: var(--restaurant-color); color:white; }
+.log-group.pier h3       { background: var(--pier-color);       color:white; }
+.log-group.park h3       { background: var(--garden-color);     color:white; }
+.log-group.casino h3     { background: var(--casino-color);     color:white; }
+
+
+
+.log-icon {
+    width: 3vh;
+    height: 3vh;
+    vertical-align: middle;
+    margin-right: 1vh;
+}
+.log-close-btn {
+    position:absolute;
+    top: 1vh;
+    right: 1vh;
+    font-size: 2.5vh;
+    cursor:pointer;
+    padding: 0.5vh 1vh;
+    border-radius: 1vh;
+    background: rgba(0,0,0,0.1);
+}
+.log-close-btn:hover {
+    background: rgba(0,0,0,0.2);
+}
+
+
+
+/* RADIO LOG COLORS MATCHING ROOT VARS */
+.radio-log-red      { color: var(--radio-red); }
+.radio-log-green    { color: var(--radio-green); }
+.radio-log-purple   { color: var(--radio-purple); }
+.radio-log-blue     { color: var(--radio-blue); }
+.radio-log-yellow   { color: var(--radio-yellow); }
+
+
+
+
+/* =========================================================
+   MOBILE RESPONSIVE OVERRIDES (SAFE)
+   DO NOT EDIT DESKTOP CSS ABOVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  /* ---------- PAGE ---------- */
+  body {
+    padding: 10px;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  /* ---------- MAIN LAYOUT ---------- */
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: auto;
+  }
+
+  .left-panel,
+  .center-panel,
+  .far-right-panel {
+    width: 100%;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .far-right-panel {
+    padding-top: 0;
+  }
+
+  /* ---------- BUTTONS ---------- */
+  .draw-btn,
+  .big-btn {
+    width: 90%;
+    max-width: 420px;
+    height: auto;
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .icon {
+    font-size: 22px;
+  }
+
+  .tile-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .bottom-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  /* ---------- WELCOME CARD ---------- */
+  #welcomeCard {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  #welcomeTitle {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+
+  #welcomeText {
+    font-size: 16px;
+  }
+
+  /* ---------- DICE ---------- */
+  #welcomeCard .dice-wrap {
+    gap: 16px;
+    margin: 10px 0;
+  }
+
+  #welcomeCard .dice-scene {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* ---------- MONOPOLY BANNER ---------- */
+  .monopoly-wrapper {
+    margin-top: 0;
+  }
+
+  .monopoly-banner {
+    font-size: 26px;
+    padding: 8px 20px;
+    letter-spacing: 2px;
+  }
+
+  .monopoly-guy-overlap {
+    height: 70px;
+    transform: translateX(90%) translateY(10%);
+  }
+
+  /* ---------- POPUPS ---------- */
+  .modal {
+    width: 92%;
+    max-height: 80vh;
+    padding: 16px;
+  }
+
+  .modal h2 {
+    font-size: 22px;
+  }
+
+  .modal p {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .close-btn {
+    font-size: 22px;
+  }
+
+  /* ---------- TOP BUTTONS ---------- */
+  .sound-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  #soundToggle {
+    right: 10px;
+    top: 10px;
+  }
+
+  /* ---------- EVENT LOG ---------- */
+  #eventLog {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    width: 90%;
+    max-width: 420px;
+    font-size: 14px;
+  }
+
+  /* ---------- PARROT ---------- */
+  #parrot {
+    width: 90px;
+    height: 90px;
+  }
+
+}
+
+
+
+</style>
+
+
+
+
+
+
+
+</head>
+<body>
+<div id="eventLog" class="hidden">
+    <div class="log-close-btn" onclick="toggleLog()">✖</div>
+
+  <div class="log-group radio">
+        <h3><img src="media/radio.png" class="log-icon"> Radio</h3>
+        <ul id="logRadio"></ul>
+    </div>
+
+<div class="log-group chance">
+        <h3>❓ &nbsp &nbsp Chance</h3>
+        <ul id="logChance"></ul>
+    </div>
+
+    <div class="log-group community">
+        <h3><img src="media/community.png" class="log-icon"> Community</h3>
+        <ul id="logCommunity"></ul>
+    </div>
+
+    <div class="log-group restaurant">
+        <h3><img src="media/restaurant.png" class="log-icon"> Restaurant</h3>
+        <ul id="logRestaurant"></ul>
+    </div>
+
+<div class="log-group pier">
+    <h3><img src="media/pier.png" class="log-icon"> Pier</h3>
+    <ul id="logPier"></ul>
+</div>
+
+<div class="log-group park">
+    <h3><img src="media/park.png" class="log-icon"> Park</h3>
+    <ul id="logPark"></ul>
+</div>
+
+<div class="log-group casino">
+    <h3><img src="media/casino.png" class="log-icon"> Casino</h3>
+    <ul id="logCasino"></ul>
+</div>
+
+</div>
+
+
+
+<audio id="bgMusic"></audio>
+<h1><br></h1>
+<button id="soundToggle" class="sound-btn" onclick="toggleSound()">🔊</button>
+<button id="helpButton" class="sound-btn" style="right: 10vh;" onclick="showHelp()">❓</button>
+<button id="logButton" class="sound-btn" style="right: 18vh;" onclick="toggleLog()">📒</button>
+
+
+
+
+
+<script>
+/* ============================
+   PARROT SOUND SYSTEM
+============================ */
+const parrotAudio = {
+    idle: [
+        "media/random_1.mp3",
+        "media/random_2.mp3",
+        "media/random_3.mp3",
+        "media/random_4.mp3",
+    ],
+    fly: "media/normal_flight.mp3",
+    danger: "media/danger_sound.mp3",
+    escape: "media/danger_flap.mp3"
+};
+
+let parrotIdleSound = null;
+let parrotFlySound = null;
+let parrotDangerSound = null;
+let parrotEscapeSound = null;
+
+function playParrotSound(src, loop=false) {
+    if (!audioUnlocked) return null;   // ⬅ prevents blocked sounds
+
+    const a = new Audio(src);
+    a.loop = loop;
+    a.volume = 0.35;
+
+    a.play().catch(()=>{});
+    return a;
+}
+
+
+function stopSound(a) {
+    if (a) {
+        a.pause();
+        a.currentTime = 0;
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<!-- 🦜 PARROT NPC -->
+<div id="parrot">
+<svg width="150" height="150" viewBox="0 0 200 200">
+
+<defs>
+    <linearGradient id="parrotGreenBody" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#9cff8a" />
+        <stop offset="100%" stop-color="#3c9f45" />
+    </linearGradient>
+
+    <linearGradient id="parrotGreenHead" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#c8ffb5" />
+        <stop offset="100%" stop-color="#4fae55" />
+    </linearGradient>
+
+    <linearGradient id="parrotGreenWing" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#b4ff9b" />
+        <stop offset="100%" stop-color="#489c50" />
+    </linearGradient>
+</defs>
+
+
+    <!-- Body -->
+    <ellipse cx="100" cy="115" rx="45" ry="60" fill="url(#parrotGreenBody)" />
+
+
+    <!-- Head -->
+    <g id="head" style="transform-origin: 100px 70px;">
+        <circle cx="100" cy="70" r="30" fill="url(#parrotGreenHead)" />
+
+
+        <!-- Right eye -->
+        <g>
+            <circle cx="115" cy="62" r="10" fill="white" />
+            <circle class="pupil" cx="115" cy="62" r="4" fill="black" />
+        </g>
+
+        <!-- Left eye -->
+        <g>
+            <circle cx="85" cy="62" r="10" fill="white" />
+            <circle class="pupil" cx="85" cy="62" r="4" fill="black" />
+        </g>
+    </g>
+
+    <!-- Beak -->
+    <polygon points="70,80 100,80 100,62" fill="#cfa341" />
+
+    <!-- Wings -->
+    <polygon class="wing" points="70,110 20,140 78,150" fill="url(#parrotGreenWing)"  />
+    <polygon class="wing" points="130,110 180,140 122,150" fill="url(#parrotGreenWing)"  />
+
+    <!-- Tail -->
+    <polygon points="100,175 75,195 125,195" fill="url(#parrotGreenWing)" />
+
+    <!-- Legs -->
+    <rect x="88" y="165" width="8" height="22" fill="#9c7a47" />
+    <rect x="103" y="165" width="8" height="22" fill="#9c7a47" />
+
+</svg>
+</div>
+
+
+
+
+
+<div class="layout">
+
+    <!-- LEFT SIDE BUTTONS -->
+    <div class="left-panel">
+        <button class="draw-btn restaurant-btn" onclick="drawRestaurant()"><img src="media/restaurant.png" class="tile-icon">Restaurant</button>
+        <button class="draw-btn pier-btn" onclick="drawPier()"><img src="media/pier.png" class="tile-icon">Pier</button>
+        <button class="draw-btn garden-btn" onclick="drawGarden()"><img src="media/park.png" class="tile-icon">Park</button>
+        <button class="draw-btn casino-btn" onclick="drawCasino()"><img src="media/casino.png" class="tile-icon">Casino</button>
+
+    </div>
+
+    <!-- CENTER PANEL (WELCOME + CHANCE + COMMUNITY) -->
+    <div class="center-panel">
+        <div id="welcomeCard" class="floating-welcome">
+
+                <!-- ⭐ Vehicle animation layer (behind everything) -->
+                <div id="transportStage">
+<!-- WATER LAYER (must come before ferry) -->
+<div id="waterStage">
+    <div class="water">
+        <div class="wave"></div>
+        <div class="shadow"></div>
+    </div>
+</div>
+
+
+                    <!-- ================= CAR ================= -->
+                    <div class="vehicle car" data-vehicle="car" data-sound="media/car.mp3">
+
+                        <div class="car-track"></div>
+                        <div class="car-track-shadow"></div>
+                        <img src="media/car.png">
+
+<!-- 2 tread wheels (CSS positions them) -->
+                        <div class="car_tread"></div>
+                        <div class="car_tread"></div>
+                        <div class="car-smoke-container"></div>
+                    </div>
+
+                    <!-- ================= SCOOTER ================= -->
+                    <div class="vehicle scooter" data-vehicle="scooter" data-sound="media/scooter.mp3">
+
+                        <div class="scooter-track"></div>
+                        <div class="scooter-track-shadow"></div>
+                        <img src="media/scooter.png">
+<!-- 2 tread wheels (CSS positions them) -->
+                        <div class="scooter_tread"></div>
+			<div class="scooter_tread"></div>
+                        <div class="scooter-smoke-container"></div>
+                    </div>
+
+                    <!-- ================= TANK ================= -->
+                    <div class="vehicle tank" data-vehicle="tank" data-sound="media/tank.mp3">
+
+                        <div class="tank-track-shadow"></div>
+                        <div class="tank-track"></div>
+                        <img src="media/tank.png">
+
+                        <!-- 5 tread wheels (CSS positions them) -->
+                        <div class="tread"></div>
+                        <div class="tread"></div>
+                        <div class="tread"></div>
+                        <div class="tread"></div>
+                        <div class="tread"></div>
+
+                        <div class="tank-smoke-container"></div>
+                    </div>
+
+
+
+
+                    <!-- ================= FERRY ================= -->
+                    <div class="vehicle ferry-wrapper" data-vehicle="ferry" data-sound="media/ferry.mp3">
+
+                        <div class="ferry-wake-shadow"></div>
+                        <div class="ferry-wake"></div>
+                        <img src="media/ferry.png" class="ferry">
+                        <div class="ferry-smoke-container"></div>
+                    </div>
+
+
+
+<!-- ================= BOOMERANG-HAT ================= -->
+<div class="vehicle boomerang-hat"
+     data-vehicle="boomerang-hat"
+     data-sound="media/hat.mp3">
+     
+    <div class="hatWrap">
+        <img class="hat" src="media/hat.png">
+        <div class="hatShadow"></div>
+    </div>
+
+</div>
+
+
+
+
+
+                </div>
+
+
+
+
+<div class="money-rain"></div>
+
+<div class="monopoly-wrapper">
+    <div class="monopoly-banner">MONOPOLY</div>
+    <img src="media/mono_guy.png" class="monopoly-guy-overlap">
+</div>
+
+
+
+
+<div class="dice-wrap">
+    <div class="dice-scene">
+        <div class="cube">
+            <div class="face f1 special-face"><img src="media/mono_special_face.png" class="mono-face-icon"></div>
+            <div class="face f2"><div class="pips pips2"><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f3"><div class="pips pips3"><div class="pip"></div><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f4"><div class="pips pips4"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f5"><div class="pips pips5">
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div></div>
+            <div class="face f6"><div class="pips pips6">
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="dice-scene">
+        <div class="cube">
+            <div class="face f1"><div class="pips pips1"><div class="pip"></div></div></div>
+            <div class="face f2"><div class="pips pips2"><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f3"><div class="pips pips3"><div class="pip"></div><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f4"><div class="pips pips4"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div></div></div>
+            <div class="face f5"><div class="pips pips5">
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div></div>
+            <div class="face f6"><div class="pips pips6">
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+            <div id="welcomeTitle">Welcome to the Tropical Island!</div>
+            <div id="welcomeText">Press any button to draw the card</div>
+
+
+
+
+        </div>
+
+        <!-- RESTORED CHANCE / COMMUNITY BUTTONS -->
+        <div class="bottom-buttons">
+            <button class="big-btn big-chance" onclick="drawChance()">
+                <div class="icon">❓</div>Chance
+            </button>
+
+            <button class="big-btn big-community" onclick="drawCommunity()"><img src="media/community.png" class="tile-icon">Community
+</button>
+
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (RADIO BUTTON) -->
+    <div class="far-right-panel">
+        <button class="draw-btn radio-btn" onclick="drawRadio()"><img src="media/radio.png" class="tile-icon">Radio</button>
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+
+function toggleLog() {
+    document.getElementById("eventLog").classList.toggle("hidden");
+}
+
+
+
+
+
+let audioUnlocked = false;
+
+
+const drawCardSound = new Audio("sounds/draw_card.mp3");
+
+function showHelp() {
+    openPopup(
+        "Game Help",
+"•  Each player should receive <b>2.5 million</b> at the start of the game."+
+"<br>3 × 500K, 1 × 100K, 2 × 50K, 5 × 500, 6 × 20K, 5 × 10K, 5 × 5K, 5 × 1K" +
+
+"<br><br>•  When you are assigned to go to property by any of the drawn cards - You do not collect Gå bonus."+
+
+"<br><br>•  If you get radio in the dice, click the radio button. Your next dice number specifies what you need to do."+
+
+"<br><br>•  During auction, you can give multiple bid till you get the winner."
+
+
+
+
+
+
+
+,
+        "popup-community tinted"
+    );
+}
+
+
+
+function shuffleArray(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+
+/// 🎵 BACKGROUND MUSIC SYSTEM
+const bgMusic = document.getElementById("bgMusic");
+
+// Pick random starting track 1–5
+const musicIndex = Math.floor(Math.random() * 2) + 1;
+bgMusic.src = `sounds/bg_monopoly${musicIndex}.mp3`;
+bgMusic.volume = 0.75;  
+
+
+
+let musicOn = true;
+
+// Browser requires user action before audio can play
+document.addEventListener("click", function startMusicOnce() {
+    if (musicOn) bgMusic.play().catch(()=>{});
+    document.removeEventListener("click", startMusicOnce);
+});
+
+// 🔁 Play next random track when one ends
+bgMusic.onended = function () {
+    const nextIndex = Math.floor(Math.random() * 2) + 1;
+    bgMusic.src = `sounds/bg_monopoly${nextIndex}.mp3`;
+    if (musicOn) bgMusic.play().catch(()=>{});
+};
+
+// 🔊 Toggle button
+function toggleSound() {
+    const btn = document.getElementById("soundToggle");
+
+    if (musicOn) {
+        bgMusic.pause();
+        btn.textContent = "🔈";  // muted icon
+        musicOn = false;
+    } else {
+        bgMusic.play().catch(()=>{});
+        btn.textContent = "🔊";  // sound on icon
+        musicOn = true;
+    }
+}
+
+
+
+function rollWelcomeDice() {
+    const cubes = document.querySelectorAll("#welcomeCard .cube");
+
+    cubes.forEach(cube => {
+        const xRand = 360 * (1 + Math.floor(Math.random() * 3));
+        const yRand = 360 * (1 + Math.floor(Math.random() * 3));
+        const xFace = [0, 90, -90][Math.floor(Math.random() * 3)];
+        const yFace = [0, 90, -90, 180][Math.floor(Math.random() * 4)];
+
+        cube.style.transition = "transform 1.3s cubic-bezier(.36,.07,.19,.97)";
+        cube.style.transform = `
+            rotateX(${xRand + xFace}deg)
+            rotateY(${yRand + yFace}deg)
+        `;
+    });
+}
+
+
+// Auto roll every 3 seconds
+setInterval(rollWelcomeDice, 3000);
+
+// First roll immediately
+setTimeout(rollWelcomeDice, 500);
+
+
+
+/* ===========================
+   logging cards
+   =========================== */
+
+
+function addGroupedLog(category, title, action, colorClass = "") {
+    const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+    let target = null;
+
+    if (category === "Community")  target = document.getElementById("logCommunity");
+    else if (category === "Chance") target = document.getElementById("logChance");
+    else if (category === "Radio")  target = document.getElementById("logRadio");
+    else if (category === "Restaurant") target = document.getElementById("logRestaurant");
+    else if (category === "Pier")   target = document.getElementById("logPier");
+    else if (category === "Park")   target = document.getElementById("logPark");
+    else if (category === "Casino") target = document.getElementById("logCasino");
+
+    if (!target) return;
+
+    const entry = document.createElement("li");
+    entry.innerHTML = `<strong>${time}</strong> — ${title}<br><small>${action}</small>`;
+
+    // 🎨 RADIO COLOR SUPPORT
+    if (colorClass.includes("radio-border-red"))    entry.style.color = "var(--red-color)";
+    else if (colorClass.includes("radio-border-green"))  entry.style.color = "var(--green-color)";
+    else if (colorClass.includes("radio-border-purple")) entry.style.color = "var(--purple-color)";
+    else if (colorClass.includes("radio-border-blue"))   entry.style.color = "var(--lightblue-color)";
+    else if (colorClass.includes("radio-border-yellow")) entry.style.color = "var(--yellow-color)";
+
+    target.prepend(entry);
+}
+
+
+
+
+/* ===========================
+   POPUP CREATOR
+   =========================== */
+function openPopup(title, action, colorClass = "") {
+
+    drawCardSound.currentTime = 0;
+    drawCardSound.play().catch(()=>{});
+
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+
+    const modal = document.createElement("div");
+    modal.className = "modal tinted " + colorClass;
+
+    if (colorClass.includes("radio-border-")) {
+        const key = colorClass.split("radio-border-")[1].split(" ")[0];
+        const cssColor = getComputedStyle(document.documentElement)
+            .getPropertyValue(`--${key}-color`);
+        modal.style.setProperty("--tint", cssColor);
+    }
+
+
+// Determine log category
+let category = "Card";
+
+if (colorClass.includes("popup-community"))       category = "Community";
+else if (colorClass.includes("popup-chance"))     category = "Chance";
+else if (colorClass.includes("radio-border-"))    category = "Radio";
+else if (colorClass.includes("popup-restaurant")) category = "Restaurant";
+else if (colorClass.includes("popup-pier"))       category = "Pier";
+else if (colorClass.includes("popup-garden") ||
+         colorClass.includes("popup-park"))       category = "Park";
+else if (colorClass.includes("popup-casino"))     category = "Casino";
+
+// Log radio property or any other second overlay card
+addGroupedLog(category, title, action, colorClass);
+
+
+
+
+
+
+    modal.innerHTML = `
+        <div class="close-btn"
+            onclick="
+                this.closest('.modal-overlay').remove();
+
+                // stop radio sounds
+                radioEffectSound?.pause();
+                radioPropertySound?.pause();
+
+                // resume background music
+                if (musicOn) bgMusic.play().catch(()=>{});
+
+                // resume only active vehicle audio
+                radioMode = false;
+                document.querySelectorAll('.vehicle').forEach(v => {
+                    if (v.style.opacity == '1' && v._sound) {
+                        v._sound.play().catch(()=>{});
+                    } else if (v._sound) {
+                        v._sound.pause();
+                        v._sound.currentTime = 0;
+                    }
+                });
+            ">
+            ✖
+        </div>
+
+        <h2>${title}</h2>
+        <p>${action}</p>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
+
+
+
+
+
+
+
+
+function spawnMoneyDrop() {
+    const container = document.querySelector("#welcomeCard .money-rain");
+    if (!container) return;
+
+    const bill = document.createElement("img");
+
+    const moneyTypes = [
+        "media/money1.png",
+        "media/money2.png",
+        "media/money3.png"
+    ];
+    bill.src = moneyTypes[Math.floor(Math.random() * moneyTypes.length)];
+    bill.classList.add("money-drop");
+
+    // ⭐ RANDOM SIZE (3vh → 8vh)
+    const sizeValue = Math.random() * 5 + 3;   // Number only (not string)
+    bill.style.width = sizeValue + "vh";
+
+    // ⭐ SPEED BASED ON SIZE
+    // Big bills = faster, small bills = slower
+    const speed = 10 - sizeValue * 0.6;  // tweak multiplier as needed
+    bill.style.animationDuration = speed.toFixed(2) + "s";
+
+    // RANDOM START POSITION
+    bill.style.left = Math.random() * 90 + "%";
+
+    // RANDOM ROTATION
+    const rotation = Math.random() * 40 - 20;
+    bill.style.transform = `rotate(${rotation}deg)`;
+
+    container.appendChild(bill);
+
+    // REMOVE AFTER animation
+    setTimeout(() => bill.remove(), speed * 1000);
+}
+
+
+// continuous rain
+setInterval(spawnMoneyDrop, 1000);
+
+
+
+
+
+
+function openPopupInsideSameOverlay(title, action, colorClass = "") {
+
+    const overlay = document.querySelector(".modal-overlay:last-of-type");
+
+    const modal = document.createElement("div");
+    modal.className = "modal tinted " + (colorClass || "");
+
+// Determine log category (same logic as openPopup)
+let category = "Card";
+
+if (colorClass.includes("popup-community"))       category = "Community";
+else if (colorClass.includes("popup-chance"))     category = "Chance";
+else if (colorClass.includes("radio-border-"))    category = "Radio";
+else if (colorClass.includes("popup-restaurant")) category = "Restaurant";
+else if (colorClass.includes("popup-pier"))       category = "Pier";
+else if (colorClass.includes("popup-garden") ||
+         colorClass.includes("popup-park"))       category = "Park";
+else if (colorClass.includes("popup-casino"))     category = "Casino";
+
+// Log radio property or any other second overlay card
+addGroupedLog(category, title, action, colorClass);
+
+
+
+
+    // set tint dynamically
+    if (colorClass.includes("radio-border-")) {
+        const key = colorClass.split("radio-border-")[1].split(" ")[0];
+        const cssColor = getComputedStyle(document.documentElement)
+            .getPropertyValue(`--${key}-color`);
+        modal.style.setProperty("--tint", cssColor);
+    }
+
+    modal.innerHTML = `
+        <div class="close-btn"
+            onclick="
+                this.closest('.modal-overlay').remove();
+
+                // stop radio sounds
+                radioEffectSound?.pause();
+                radioPropertySound?.pause();
+
+                // resume background music
+                if (musicOn) bgMusic.play().catch(()=>{});
+
+                // resume only the currently active vehicle sound
+                radioMode = false;
+                document.querySelectorAll('.vehicle').forEach(v => {
+                    if (v.style.opacity == '1' && v._sound) {
+                        v._sound.play().catch(()=>{});
+                    } else if (v._sound) {
+                        v._sound.pause();
+                        v._sound.currentTime = 0;
+                    }
+                });
+            ">
+            ✖
+        </div>
+
+        <h2>${title}</h2>
+        <p>${action}</p>
+    `;
+
+    overlay.appendChild(modal);
+}
+
+
+
+
+
+/* -------------------------------------------------------
+   FULL CHANCE CARDS
+-------------------------------------------------------- */
+const chanceCards = [
+    { title: "Forced Trade!",   action: "Choose any player and swap one property of your choice with one of theirs (must be equal color group size)." },
+    { title: "Auction Chaos", action: "Pick any unowned property. It immediately goes to auction." },
+    { title: "Public Vote",  action: "All players vote to give you either $200 OR immunity from rent for one turn." },
+    { title: "Double or Nothing", action: "Pay 100 K to roll a die. (1–3: Lose it) (4–6: Gain 300 K)." },
+    { title: "Gamble on Green", action: "Guess odd or even. Roll a die. If correct, collect 150 K; otherwise pay 75 K." },
+    { title: "Warp Train", action: "Teleport to the nearest railroad. If owned, rent is doubled." },
+    { title: "Leapfrog", action: "Move forward exactly 7 spaces." },
+    { title: "Reverse!", action: "Move backward until you reach the closest unowned property." },
+    { title: "Rent Shield", action: "Ignore the next rent you land on." },
+    { title: "Tax Exemption", action: "Skip your next tax payment (Luxury or Income Tax)." },
+    { title: "Lucky Investor", action: "For the next 3 turns, collect +50 K when you pass GO." },
+    { title: "Market Crash", action: "All players must pay 50 K to the bank." },
+    { title: "Stimulus Package", action: "All players receive 100 K." },
+    { title: "Inflation", action: "All rents increase by +20% until your next turn." },
+    { title: "Neighborhood Fixer", action: "Visit any property you own. If it has no houses, add one for half price." },
+    { title: "Charity Challenge", action: "Pay 50 K. Choose a player to receive it." },
+
+    { title: "Casino Boom!", action: "If you own Casino, collect 120 K. Others pay 20 K." },
+    { title: "Pier Damaged by Storm", action: "If you own Pier, pay 60 K." },
+    { title: "Garden Festival", action: "If you own a Park, collect 70 K." },
+    { title: "Restaurant Rush Hour", action: "If you own Restaurant, collect 50 K per upgraded neighbor." },
+
+    { title: "Go Back Three Spaces", action: "Move back 3 spaces." },
+    { title: "Advance to Go", action: "Move to GÅ. Collect 200 K." },
+    { title: "Tropical Heat Wave", action: "Move back 4 spaces." },
+    { title: "Ocean Drift", action: "Move to next Purple property." },
+
+    { title: "Storm on the Green Coast", action: "If you own Green properties, pay 40 K each." },
+    { title: "Black Pearl Discovery", action: "Collect 300 K." },
+
+
+    { title: "Ancient Ruins Found", action: "Move to nearest 300K+ property. Collect 50 K if passing GÅ." },
+
+    { title: "Bank Pays Dividend", action: "Collect 50 K." },
+    { title: "Elected Chairman", action: "Pay each player 50 K." },
+    { title: "Get Out of Jail Free", action: "Keep until needed." },
+
+    { title: "Go Directly to Jail", action: "Do not pass GÅ." },
+    { title: "Make General Repairs", action: "Pay 25 K per house / 100 K per hotel." },
+
+    { title: "Tropical Storm", action: "Pay 100 K. Beach properties pay 50 K." },
+    { title: "Boat Engine Trouble", action: "Move to Jetski-uthyrningen." },
+    { title: "Helicopter Malfunction", action: "Move to Helikopterplattan." },
+    { title: "Shark Sighting", action: "Lose 50 K." },
+    { title: "Hidden Beach Discovered", action: "Move to Isla Cordoba." },
+
+    { title: "Mountain Mudslide", action: "If you own Tidernas Slut or Halvmånevyn, pay 100 K." },
+    { title: "Abandoned Fishing Nets", action: "Pay 25 K per Yellow group property." },
+    { title: "Smuggler Trouble", action: "Move to Smugglarrviken. Pay double rent." },
+
+    { title: "Travel with the Breeze", action: "Move to next Light Blue property." },
+    { title: "Heat Wave", action: "Move back 4 spaces." },
+    { title: "Lucky Breeze", action: "Advance to nearest Chance." },
+    { title: "Pier Traffic", action: "Go directly to Taxihållplatsen." },
+    { title: "Beach Party Invitation", action: "Move to ANY property you choose." }
+];
+
+/* -------------------------------------------------------
+   FULL COMMUNITY CARDS
+-------------------------------------------------------- */
+const communityCards = [
+{ title: "Volunteer at the Shelter", action: "Gain a Goodwill Token: redeem later to avoid a rent payment." },
+{ title: "Bike-to-Work Week", action: "Move to the nearest Utility for free. If owned, pay only half rent." },
+    { title: "Advance to Go", action: "Move to GÅ and collect 200 K." },
+    { title: "Bank Error", action: "Collect 200 K." },
+    { title: "Collect 50 K From Every Player", action: "Each player gives you 50 K." },
+    { title: "Doctor’s Fees", action: "Pay 50 K." },
+    { title: "Sale of Stock", action: "Collect 45 K." },
+    { title: "Get Out of Jail Free", action: "Keep or sell for 100 K." },
+    { title: "Go to Jail", action: "Go directly to Jail." },
+
+    { title: "Income Tax Refund", action: "Collect 20 K." },
+    { title: "Life Insurance Matures", action: "Collect 100 K." },
+
+    { title: "Hospital Fees", action: "Pay 100 K." },
+    { title: "School Fees", action: "Pay 150 K." },
+
+    { title: "Service Payment", action: "Collect 25 K." },
+    { title: "Beauty Contest Ticket Purchase", action: "Pay 10 K." },
+
+    { title: "Street Repairs", action: "Pay 40 K per property." },
+
+    { title: "Inherit 100 K", action: "Collect 100 K." },
+    { title: "Xmas Fund Matures", action: "Collect 100 K." },
+
+    { title: "Local Festival Donation", action: "Collect 150 K." },
+    { title: "Mangrove Cleanup", action: "Pay 30 K. Move to Mangroveviken." },
+    { title: "Calm Seas", action: "Collect 75 K." },
+
+    { title: "Helicopter Tours", action: "Go to Helikopterplatsen." },
+    { title: "Solar Boom", action: "Collect 120 K." },
+
+    { title: "Travel Magazine Feature", action: "Move to your most valuable property." },
+    { title: "Rare Seashell Auction", action: "Collect 50 K from each player." },
+    { title: "Resort Guest Tips", action: "Collect 40 K." },
+
+    { title: "Peaceful Evening", action: "Move to Ljuva Dynerna. No rent." },
+
+    { title: "Park Conservation Bonus", action: "If you own a Garden, collect 50 K." },
+    { title: "Restaurant Popularity Boost", action: "If you own a Restaurant, collect 70 K." },
+    { title: "Pier Fishing Rush", action: "If you own a Pier, collect 60 K." },
+    { title: "Casino Jackpot Tax", action: "If you own a Casino, pay 80 K." }
+];
+
+/* -------------------------------------------------------
+   ENTERPRISE OUTCOMES
+-------------------------------------------------------- */
+const restaurantOutcomes = [
+    { title: "Busy Dinner Rush", action: "Pay owner 80 K." },
+    { title: "Quiet Evening", action: "Pay owner 30 K." },
+    { title: "Celebrity Chef Event", action: "Pay owner 120 K." },
+    { title: "Bad Reviews", action: "Owner pays you 20 K." },
+    { title: "Perfect Location", action: "If neighbors upgraded: pay owner 150 K." },
+    { title: "Happy Hour", action: "Pay owner 60 K." },
+    { title: "Food Critic Review", action: "Owner pays 100 K penalty." },
+    { title: "Slow Tourist Day", action: "Pay owner 25 K." },
+    { title: "Banquet Booking", action: "Pay owner 140 K." },
+    { title: "Kitchen Repairs", action: "Pay owner 40 K." },
+    { title: "Seafood Night", action: "Pay owner 90 K." },
+    { title: "Overcrowded Tables", action: "Pay owner 110 K." },
+    { title: "Neighborhood Boost", action: "If neighbor upgraded: pay owner 70 K." },
+    { title: "Chef Sick", action: "Owner pays 10 K." },
+    { title: "Tour Group Arrival", action: "Pay owner 130 K." }
+];
+
+const pierOutcomes = [
+    { title: "Large Fishing Crowd", action: "Pay owner 70 K." },
+    { title: "Storm Damage", action: "Owner pays 20 K." },
+    { title: "Tourist Festival", action: "Pay owner 100 K." },
+    { title: "Quiet Day", action: "Pay owner 15 K." },
+    { title: "Accident (Insurance covers it)", action: "Owner pays 50 K." },
+    { title: "Sunset Cruise", action: "Pay owner 80 K." },
+    { title: "Boardwalk Performers", action: "Owner pays 40 K." },
+    { title: "Pier Maintenance", action: "Pay owner 30 K." },
+    { title: "Fishing Competition", action: "Pay owner 95 K." },
+    { title: "Tour Bus Drop-off", action: "Pay owner 85 K." },
+    { title: "Seaweed Cleanup", action: "Pay owner 25 K." },
+    { title: "Low Tide", action: "Pay owner 20 K." },
+    { title: "Photography Hotspot", action: "Pay owner 55 K." },
+    { title: "Rainy Afternoon", action: "Pay owner 10 K." },
+    { title: "Fireworks Night", action: "Pay owner 120 K." }
+];
+
+const gardenOutcomes = [
+    { title: "Botanical Attraction", action: "Pay owner 40 K." },
+    { title: "Maintenance Day", action: "Pay owner 20 K." },
+    { title: "Garden Wedding", action: "Pay owner 80 K." },
+    { title: "Nature Walk", action: "Pay owner 15 K." },
+    { title: "Eco Tourism", action: "Pay owner 30 K." },
+    { title: "Picnic Crowd", action: "Pay owner 35 K." },
+    { title: "Birdwatching Tour", action: "Pay owner 25 K." },
+    { title: "Yoga Retreat", action: "Pay owner 50 K." },
+    { title: "Playground Day", action: "Pay owner 20 K." },
+    { title: "Botanical Grant", action: "Pay owner 60 K." },
+    { title: "Storm Cleanup", action: "Pay owner 10 K." },
+    { title: "School Field Trip", action: "Pay owner 45 K." },
+    { title: "Photography Expo", action: "Pay owner 55 K." },
+    { title: "Guided Tour", action: "Pay owner 35 K." },
+    { title: "Invasive Species Removal", action: "Pay owner 15 K." }
+];
+
+const casinoOutcomes = [
+    { title: "High Roller Night", action: "Pay owner 200 K." },
+    { title: "Lucky Streak", action: "Pay owner 180 K." },
+    { title: "Poker Tournament", action: "Pay owner 160 K." },
+    { title: "Roulette Frenzy", action: "Pay owner 220 K." },
+    { title: "VIP Arrival", action: "Pay owner 250 K." },
+    { title: "Blackjack Madness", action: "Pay owner 140 K." },
+    { title: "Tourist Rush", action: "Pay owner 120 K." },
+    { title: "Evening Crowd", action: "Pay owner 90 K." },
+
+    { title: "Security Violation", action: "Owner pays bank 70 K." },
+    { title: "Broken Machines", action: "Owner pays bank 50 K." },
+    { title: "Fraud Investigation", action: "Owner pays bank 100 K." },
+    { title: "Counterfeit Chips", action: "Owner pays bank 90 K." },
+
+    { title: "Jackpot!", action: "Owner pays YOU 100 K." },
+    { title: "Lucky Wheel", action: "Owner pays YOU 80 K." },
+    { title: "Mega Jackpot", action: "Owner pays YOU 200 K." }
+];
+
+
+
+
+
+/* ===========================
+   RADIO SYSTEM — PROPERTY COLORS
+   =========================== */
+
+const propertyColors = {
+    "Död Mans Udde": "brown",
+    "Mangrove-Klyftan": "brown",
+
+    "Pelikanstranden": "lightblue",
+    "Smugglarrviken": "lightblue",
+    "Stingrockornas Vik": "lightblue",
+
+    "Örn Nästet": "pink",
+    "Vyerna's Berg": "pink",
+    "Utkiksklippan": "pink",
+
+    "Stora Stenarna": "orange",
+    "Nini Manu": "orange",
+    "Hogvattnets topp": "orange",
+
+    "Vita Kusten": "red",
+    "Delfinudden": "red",
+    "Isla Cordoba": "red",
+
+    "Tidernas Slut": "yellow",
+    "Halvmanevyn": "yellow",
+    "Manskens Stranden": "yellow",
+
+    "Ljuva Dynerna": "green",
+    "Palmkusten": "green",
+    "Smaragd Lagunen": "green",
+
+    "Utsiktsstranden": "purple",
+    "Lugna Dynerna": "purple",
+
+
+/* TRANSPORT (Black) */
+    "Taxihållplatsen": "transport",
+    "Jetski–uthyrningen": "transport",
+    "Helikopterplattan": "transport",
+    "Scoter–uthyrningen": "transport",
+
+    /* STATE UTILITIES (Grey) */
+    "Vindkraftverket": "state",
+    "Solenergibasen": "state"
+
+
+};
+
+
+
+
+let chancePlaylist = shuffleArray([...chanceCards]);
+let communityPlaylist = shuffleArray([...communityCards]);
+let restaurantPlaylist = shuffleArray([...restaurantOutcomes]);
+let pierPlaylist = shuffleArray([...pierOutcomes]);
+let gardenPlaylist = shuffleArray([...gardenOutcomes]);
+let casinoPlaylist = shuffleArray([...casinoOutcomes]);
+
+
+
+
+
+
+
+
+// Build the list used for random draw
+const radioProperties = Object.keys(propertyColors);
+
+
+/* ===========================
+   RADIO DICE CARD CONTENT
+   =========================== */
+
+const radioDiceInfo = {
+    title: "📻 RADIO – Dice Effects",
+    action:
+        "1 – You may buy the property if unowned (Pay rent if owned).<br>" +
+        "2 – Tourist Spotlight - Pay the rent (2x rent if development exist).<br>" +
+        "3 – Storm Warning (owner pays 30 K to Bank for maintenance).<br>" +
+        "4 – Festival Event (Pay upgrade 20% of property cost to owner).<br>" +
+        "5 – Inspection (Owner pays you 20K).<br>" +
+        "6 – Jackpot! - Get the property as a reward. If owned then pay no rent."
+};
+
+
+/* ===========================
+   GENERIC CARD DRAW
+   =========================== */
+function drawGeneric(list, styleClass) {
+    if (!list.length) {
+        openPopup("No Cards", "This list is empty.", styleClass);
+        return;
+    }
+
+    const card = list[Math.floor(Math.random() * list.length)];
+    openPopup(card.title, card.action, styleClass);
+}
+
+
+
+
+
+/* ===========================
+   RADIO — TWO POPUPS
+   =========================== */
+let radioVoicePlaylist = shuffleArray([...radioProperties]);
+let radioEffectSound = null;
+let radioMode = false;   // vehicles muted while radio is active
+let radioPropertySound = null;
+
+
+
+function drawRadio() {
+
+    // Pause background music for voice clarity
+    bgMusic.pause();
+
+radioMode = true;
+
+// pause all active vehicle sounds
+document.querySelectorAll(".vehicle").forEach(v => {
+    if (v._sound) v._sound.pause();
+});
+
+
+    // If we’ve used all properties, reshuffle for a new cycle
+    if (radioVoicePlaylist.length === 0) {
+        radioVoicePlaylist = shuffleArray([...radioProperties]);
+    }
+
+    // Take next property from playlist
+    const property = radioVoicePlaylist.shift();
+
+    // First popup: Dice card
+    openPopup(
+        radioDiceInfo.title, 
+        radioDiceInfo.action, 
+        "popup-radio popup-radio-dice"
+    );
+
+    // Property popup
+    const colorClass =
+        "radio-border-" + propertyColors[property] + " tinted";
+
+    openPopupInsideSameOverlay(
+        property,
+        "",
+        colorClass
+    );
+
+    // Normalize property name for audio filename
+const normalized = property
+    .toLowerCase()
+    .replace(/ö/g, "o")
+    .replace(/ä/g, "a")
+    .replace(/å/g, "a")
+    .replace(/[^a-z0-9]+/g, "_");
+
+const audioFile = `sounds/radio_${normalized}.mp3`;
+
+// --- NEW RADIO SEQUENCE ---
+// 1. Play random radio effect first
+const randomEffectIndex = Math.floor(Math.random() * 3) + 1;
+radioEffectSound = new Audio(`sounds/radio (${randomEffectIndex}).mp3`);
+radioEffectSound.play().catch(()=>{});
+
+// 2. When effect finishes → play property
+radioEffectSound.onended = () => {
+    radioPropertySound = new Audio(audioFile);
+
+// 3. When property finishes → play radio_end
+    radioPropertySound.onended = () => {
+        const radioEndSound = new Audio("sounds/radio_end.mp3");
+        radioEndSound.play().catch(()=>{});
+    };
+
+    radioPropertySound.play().catch(()=>{});
+};
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+/* ===========================
+   BUTTON HANDLERS
+   =========================== */
+
+/* ===========================
+   NON-REPEATING DRAW FUNCTIONS
+   =========================== */
+
+// CHANCE
+function drawChance() {
+    if (chancePlaylist.length === 0) {
+        chancePlaylist = shuffleArray([...chanceCards]);
+    }
+    const card = chancePlaylist.shift();
+    openPopup(card.title, card.action, "popup-chance tinted");
+}
+
+// COMMUNITY
+function drawCommunity() {
+    if (communityPlaylist.length === 0) {
+        communityPlaylist = shuffleArray([...communityCards]);
+    }
+    const card = communityPlaylist.shift();
+    openPopup(card.title, card.action, "popup-community tinted");
+}
+
+// RESTAURANT
+function drawRestaurant() {
+    if (restaurantPlaylist.length === 0) {
+        restaurantPlaylist = shuffleArray([...restaurantOutcomes]);
+    }
+    const card = restaurantPlaylist.shift();
+    openPopup(card.title, card.action, "popup-restaurant tinted");
+}
+
+// PIER
+function drawPier() {
+    if (pierPlaylist.length === 0) {
+        pierPlaylist = shuffleArray([...pierOutcomes]);
+    }
+    const card = pierPlaylist.shift();
+    openPopup(card.title, card.action, "popup-pier tinted");
+}
+
+// GARDEN
+function drawGarden() {
+    if (gardenPlaylist.length === 0) {
+        gardenPlaylist = shuffleArray([...gardenOutcomes]);
+    }
+    const card = gardenPlaylist.shift();
+    openPopup(card.title, card.action, "popup-garden tinted");
+}
+
+// CASINO
+function drawCasino() {
+    if (casinoPlaylist.length === 0) {
+        casinoPlaylist = shuffleArray([...casinoOutcomes]);
+    }
+    const card = casinoPlaylist.shift();
+    openPopup(card.title, card.action, "popup-casino tinted");
+}
+
+
+
+function emitFerrySmoke(wrapper) {
+    const c = wrapper.querySelector(".ferry-smoke-container");
+    const p = document.createElement("div");
+    p.className = "ferry-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+}
+
+function emitCarSmoke(wrapper) {
+    const c = wrapper.querySelector(".car-smoke-container");
+    const p = document.createElement("div");
+    p.className = "car-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 2400);
+}
+
+function emitScooterSmoke(wrapper) {
+    const c = wrapper.querySelector(".scooter-smoke-container");
+    const p = document.createElement("div");
+    p.className = "scooter-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+}
+
+function emitTankSmoke(wrapper) {
+    const c = wrapper.querySelector(".tank-smoke-container");
+    const p = document.createElement("div");
+    p.className = "tank-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 3000);
+}
+
+/* ======================================================
+   VEHICLE SEQUENCE ENGINE
+===================================================== */
+
+
+
+const vehicleData = new Map([
+    ["car",          { anim: "carCycle 25s linear forwards", dur: 25000 }],
+    ["scooter",      { anim: "scooterCycle 11s linear forwards", dur: 11000 }],
+    ["tank",         { anim: "tankCycle 40s linear forwards", dur: 40000 }],
+    ["ferry",        { anim: "ferryCycle 30s linear forwards, ferryBob 30s ease-in-out infinite", dur: 30000 }],
+["boomerang-hat", { anim: "boomerangHat 6s linear forwards", dur: 6000 }]
+]);
+
+
+const VEHICLE_VOLUME_MAP = {
+    "car": 0.2,
+    "scooter": 0.2,
+    "tank": 0.1,
+    "ferry": 0.15,
+    "boomerang-hat": 0.2
+};
+
+
+
+
+function playVehicle(v) {
+    if (!v) return;
+
+    const type = v.dataset.vehicle;
+    const data = vehicleData.get(type);
+
+    /* reset */
+    v.style.opacity = 1;
+    v.style.left = "-40vh";
+    v.style.animation = "none";
+    void v.offsetWidth;
+    v.style.animation = data.anim;
+
+    /* CREATE SOUND OBJECT (THIS WAS MISSING) */
+    let s = new Audio(v.dataset.sound);
+    s.loop = true;
+    v._sound = s;  // store reference so we can pause/resume
+
+    /* VEHICLE VOLUME */
+    const vol = VEHICLE_VOLUME_MAP[type] ?? 0.3;
+
+    /* play if radio is not active */
+    if (!radioMode) {
+        s.play().then(() => {
+            s.volume = vol;
+        }).catch(()=>{});
+    }
+
+    /* smoke intervals */
+    if (type === "car")     v._smoke = setInterval(() => emitCarSmoke(v), 350);
+    if (type === "scooter") v._smoke = setInterval(() => emitScooterSmoke(v), 200);
+    if (type === "tank")    v._smoke = setInterval(() => emitTankSmoke(v), 300);
+    if (type === "ferry")   v._smoke = setInterval(() => emitFerrySmoke(v), 350);
+
+    /* end after animation duration */
+    setTimeout(() => {
+        v.style.opacity = 0;
+        v.style.animation = "none";
+
+        if (v._smoke) {
+            clearInterval(v._smoke);
+            v._smoke = null;
+        }
+
+        s.pause();
+        s.currentTime = 0;
+
+        const nextDelay = Math.random() * 20000;
+        setTimeout(() => startRandomVehicle(), nextDelay);
+
+    }, data.dur);
+}
+
+
+
+function playWater(){
+    // Show water and start rising animation
+    waterStage.style.opacity = 1;
+    waterStage.style.animation = "none";
+    void waterStage.offsetWidth;
+    waterStage.style.animation = "waterLevel 6s ease-in-out forwards";
+
+    // After rise, do NOT hide water yet — keep it visible during ferry
+    setTimeout(()=>{
+        const ferry = document.querySelector("#transportStage .ferry-wrapper");
+        playVehicleWithWater(ferry);
+    }, 5000);  // water rise duration
+}
+
+
+
+
+function playVehicleWithWater(v) {
+    if (!v) return;
+
+    const type = v.dataset.vehicle;
+    const data = vehicleData.get(type);
+
+    /* reset */
+    v.style.opacity = 1;
+    v.style.left = "-40vh";
+    v.style.animation = "none";
+    void v.offsetWidth;
+    v.style.animation = data.anim;
+
+    /* SOUND FIX */
+    let s = new Audio(v.dataset.sound);
+    s.loop = true;
+    v._sound = s;
+
+    const vol = VEHICLE_VOLUME_MAP[type] ?? 0.3;
+
+    if (!radioMode) {
+        s.play().then(() => {
+            s.volume = vol;
+        }).catch(()=>{});
+    }
+
+    /* smoke */
+    if (type === "ferry") {
+        v._smoke = setInterval(() => emitFerrySmoke(v), 350);
+    }
+
+    /* after animation ends */
+    setTimeout(() => {
+        v.style.opacity = 0;
+        v.style.animation = "none";
+
+        if (v._smoke) {
+            clearInterval(v._smoke);
+        }
+
+        s.pause();
+        s.currentTime = 0;
+
+        /* drop water */
+        waterStage.style.animation = "none";
+        void waterStage.offsetWidth;
+        waterStage.style.animation = "waterLevelDown 4s ease forwards";
+
+        setTimeout(() => {
+            waterStage.style.opacity = 0;
+            const nextDelay = Math.random() * 20000;
+            setTimeout(() => startRandomVehicle(), nextDelay);
+        }, 4000);
+
+    }, data.dur);
+}
+
+
+
+
+
+
+
+/* ============================================================
+   RANDOM VEHICLE STARTER
+============================================================ */
+
+const waterStage = document.querySelector("#waterStage");
+
+const vehicles = [
+    document.querySelector("#transportStage .car"),
+    document.querySelector("#transportStage .scooter"),
+    document.querySelector("#transportStage .tank"),
+    document.querySelector("#transportStage .boomerang-hat")  
+];
+
+
+/* ======================================================
+   BOOMERANG HAT ANIMATION (UNTOUCHED LOGIC)
+====================================================== */
+(function(){
+    let frames = "@keyframes boomerangHat {\n";
+
+    function lerp(a,b,t){ return a+(b-a)*t; }
+
+    for (let i=0; i<=100; i++) {
+        let p = i/100;
+        let x;
+
+        if (p <= 0.33) x = lerp(0, 1300, p / 0.33);
+        else if (p <= 0.66) x = lerp(1300, -1200, (p - 0.33) / 0.33);
+        else x = lerp(-1200, 0, (p - 0.66) / 0.34);
+
+        let y = Math.sin(p * Math.PI) * 35;
+
+        frames += `${i}% { transform: translate(${x}px, ${y}px); }\n`;
+    }
+
+    frames += "}";
+
+    let style = document.createElement("style");
+    style.textContent = frames;
+    document.head.appendChild(style);
+})();
+
+
+
+
+function startRandomVehicle(){
+    let pick = Math.floor(Math.random() * (vehicles.length + 1));
+
+    // Disable ferry temporarily
+    if(pick === vehicles.length){
+         playWater();
+     } else {
+         playVehicle(vehicles[pick]);
+     }
+
+}
+
+
+
+
+/* ============================================================
+   USER CLICK ACTIVATOR (REQUIRED FOR SOUND)
+============================================================ */
+
+document.addEventListener("click", function startOnce() {
+
+    audioUnlocked = true;
+
+    // Unlock audio by playing a silent dummy sound
+    const unlock = new Audio();
+    unlock.volume = 0;
+    unlock.play().catch(()=>{});
+
+    startRandomVehicle();
+    document.removeEventListener("click", startOnce);
+});
+
+
+
+</script>
+
+
+<script>
+/* =====================================================
+      PARROT BEHAVIOR — CLEAN, FIXED, FULL VERSION
+===================================================== */
+
+const parrot = document.getElementById("parrot");
+const head = document.getElementById("head");
+let isEscaping = false;
+let dangerActive = false;
+
+let lastSafeX = null;
+let lastSafeY = null;
+
+// ESCAPE HEIGHTS
+const ESCAPE_HEIGHT = 150;
+const SCOOTER_ESCAPE_HEIGHT = 260;
+
+// WING SPEEDS
+const NORMAL_WING_SPEED = "0.35s";
+const FAST_WING_SPEED = "0.20s";
+const SCOOTER_FAST_FLAP = "0.12s";
+
+// SCOOTER PRIORITY FLAG
+let scooterThreat = false;
+
+// YOUR MANUAL PERCH POINTS
+const perchPoints = [
+    
+{ x: 80, y: 4 },
+{ x: 920, y: 15 },
+{ x: 1340, y: 200 },
+{ x: 1400, y: -20 },
+{ x: 1400, y: 800 },
+{ x: 730, y: 260 },
+{ x: 700, y: 540 },
+{ x: 800, y: 540 },
+{ x: 1050, y: 700 },
+    
+
+];
+
+
+/* Smooth flight */
+function smoothFlyTo(targetX, targetY) {
+    const rect = parrot.getBoundingClientRect();
+// play short flight sound each time it moves
+stopSound(parrotFlySound);
+parrotFlySound = playParrotSound(parrotAudio.fly);
+
+    const dx = targetX - rect.x;
+    const dy = targetY - rect.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const speed = distance * 0.006;
+
+    parrot.style.transition = `left ${speed}s ease, top ${speed}s ease`;
+    parrot.style.left = `${targetX}px`;
+    parrot.style.top = `${targetY}px`;
+
+    head.style.transform = `rotate(${dx > 0 ? 10 : -10}deg)`;
+}
+
+(function placeParrotAtStart() {
+    const start = perchPoints[Math.floor(Math.random() * perchPoints.length)];
+    parrot.style.left = start.x + "px";
+    parrot.style.top = start.y + "px";
+})();
+    
+
+/* Normal movement loop */
+function flyLoop() {
+    if (isEscaping || dangerActive) return;
+
+    const p = perchPoints[Math.floor(Math.random() * perchPoints.length)];
+    smoothFlyTo(p.x, p.y);
+
+    const wait = 20000+ Math.random() * 20000;
+    setTimeout(flyLoop, wait);
+}
+
+setTimeout(flyLoop, 1500);
+
+// PARROT IDLE CHIRPS (only when calm)
+function startIdleChirps() {
+    setInterval(() => {
+        if (!dangerActive && !isEscaping) {
+            const pick = parrotAudio.idle[Math.floor(Math.random()*parrotAudio.idle.length)];
+            stopSound(parrotIdleSound);
+            parrotIdleSound = playParrotSound(pick);
+        }
+    }, 30000+ Math.random()*30000);
+}
+startIdleChirps();
+
+
+
+/* =====================================================
+      DANGER DETECTION
+===================================================== */
+function checkVehicleDanger() {
+    const vehicles = document.querySelectorAll(".vehicle");
+    const pr = parrot.getBoundingClientRect();
+
+    let foundDanger = false;
+    scooterThreat = false;   // this now means "HIGH danger mode"
+
+    vehicles.forEach(v => {
+        const vr = v.getBoundingClientRect();
+
+        const dx = Math.abs((vr.x + vr.width/2) - (pr.x + pr.width/2));
+        const dy = Math.abs((vr.y + vr.height/2) - (pr.y + pr.height/2));
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        // --- ALL VEHICLES WARNING ZONE (same as scooter logic before) ---
+        if (dist < 500) {
+            foundDanger = true;
+            scooterThreat = true;   // <-- HIGH ESCAPE mode for ALL vehicles
+        }
+    });
+
+    if (foundDanger && !isEscaping) {
+        dangerActive = true;
+        escapeFromDanger();
+    }
+
+    if (!foundDanger && dangerActive) {
+        // stop escape sound early
+        stopSound(parrotEscapeSound);
+        parrotEscapeSound = null;
+
+        dangerActive = false;
+        returnToSafeSpot();
+    }
+
+    requestAnimationFrame(checkVehicleDanger);
+}
+
+
+
+
+/* =====================================================
+      ESCAPE + HOVER
+===================================================== */
+function escapeFromDanger() {
+    isEscaping = true;
+// play danger alert once
+stopSound(parrotDangerSound);
+parrotDangerSound = playParrotSound(parrotAudio.danger);
+
+// play continuous escape flapping
+stopSound(parrotEscapeSound);
+parrotEscapeSound = playParrotSound(parrotAudio.escape, true);
+
+
+    const rect = parrot.getBoundingClientRect();
+    lastSafeX = rect.x;
+    lastSafeY = rect.y;
+
+    // Select height and wing speed
+    const height = scooterThreat ? SCOOTER_ESCAPE_HEIGHT : ESCAPE_HEIGHT;
+    const wingSpeed = scooterThreat ? SCOOTER_FAST_FLAP : FAST_WING_SPEED;
+
+    document.querySelectorAll(".wing")
+        .forEach(w => w.style.animationDuration = wingSpeed);
+
+    const escapeX = rect.x;
+    const escapeY = Math.max(20, rect.y - height);
+
+    parrot.style.transition = `left 0.5s ease, top 0.5s ease`;
+    parrot.style.left = `${escapeX}px`;
+    parrot.style.top = `${escapeY}px`;
+
+    parrot.style.animation = "hoverShake 0.25s infinite";
+    head.style.transform = scooterThreat ? "rotate(-25deg)" : "rotate(-10deg)";
+}
+
+
+/* =====================================================
+      RETURN TO ORIGINAL SPOT
+===================================================== */
+function returnToSafeSpot() {
+// stop escape flap when danger ends
+stopSound(parrotEscapeSound);
+parrotEscapeSound = null;
+
+    if (!lastSafeX || !lastSafeY) return;
+
+    document.querySelectorAll(".wing")
+        .forEach(w => w.style.animationDuration = NORMAL_WING_SPEED);
+
+    parrot.style.animation = "bobbing 3.5s infinite ease-in-out";
+
+    parrot.style.transition = `left 1.4s ease, top 1.4s ease`;
+    parrot.style.left = `${lastSafeX}px`;
+    parrot.style.top = `${lastSafeY}px`;
+
+    head.style.transform = "rotate(0deg)";
+
+    setTimeout(() => {
+        isEscaping = false;
+        flyLoop();
+    }, 1500);
+}
+
+checkVehicleDanger();
+
+</script>
+
+
+
+</body>
+</html>
