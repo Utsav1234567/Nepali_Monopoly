@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Metallic Parrot Animation</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(#0a0a0f, #1a1a22);
+    }
+
+    /* Container for the parrot */
+    #parrot {
+        position: absolute;
+        width: 120px;
+        transform-origin: center;
+        transition: transform 2s ease-in-out;
+    }
+
+    /* Metallic shine effect */
+    .metal {
+        filter: drop-shadow(0 0 6px #9ef) brightness(1.4);
+    }
+
+    /* Wing flap animation */
+    @keyframes flap {
+        0% { transform: rotateZ(0deg); }
+        50% { transform: rotateZ(15deg); }
+        100% { transform: rotateZ(0deg); }
+    }
+
+    .wing {
+        animation: flap 0.35s infinite ease-in-out;
+        transform-origin: top center;
+    }
+</style>
+</head>
+<body>
+
+<!-- Metallic parrot as SVG -->
+<div id="parrot">
+<svg class="metal" width="120" height="120" viewBox="0 0 200 200">
+    <!-- Body -->
+    <ellipse cx="100" cy="110" rx="45" ry="60" fill="#bfc7ce" />
+
+    <!-- Head -->
+    <circle cx="100" cy="55" r="30" fill="#d8e0e8" />
+
+    <!-- Eye -->
+    <circle cx="115" cy="50" r="6" fill="black" />
+
+    <!-- Beak -->
+    <polygon points="130,60 115,65 115,55" fill="#cfa341" />
+
+    <!-- Wing Left -->
+    <polygon class="wing"
+        points="70,100 20,130 75,140"
+        fill="#a3adb7" />
+
+    <!-- Wing Right -->
+    <polygon class="wing"
+        points="130,100 180,130 125,140"
+        fill="#a3adb7" />
+
+    <!-- Tail -->
+    <polygon points="100,165 75,190 125,190" fill="#8f98a1" />
+</svg>
+</div>
+
+<script>
+    const parrot = document.getElementById("parrot");
+
+    // Start at a random location
+    function randomPosition() {
+        const x = Math.random() * (window.innerWidth - 150);
+        const y = Math.random() * (window.innerHeight - 150);
+        return { x, y };
+    }
+
+    // Move the parrot to random places on the screen
+    function moveParrot() {
+        const pos = randomPosition();
+        parrot.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    }
+
+    // Initial placement
+    moveParrot();
+
+    // Move every 2.8 seconds (hover + fly)
+    setInterval(moveParrot, 2800);
+</script>
+
+</body>
+</html>
