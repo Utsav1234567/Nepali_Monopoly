@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sequential Vehicle Animation — FULL FINAL with Smoke</title>
+
+<style>
+body {
+    background: transparent !important;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.animation-area {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    margin-top: 5vh;
+    overflow: hidden;
+    background: linear-gradient(#e3f6ff, #b9ddf4);
+}
+
+/* =====================================================================
+   COMMON VEHICLE WRAPPER
+===================================================================== */
+.vehicle {
+    position: absolute;
+    width: 20vh;
+    bottom: 20vh;
+    left: -30vh;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* =====================================================================
+   CAR
+===================================================================== */
+
+.car img {
+    width: 100%;
+}
+
+/* smoke container */
+.car-smoke-container {
+    position: absolute;
+    top: 5vh;
+    left: 0vh;
+    pointer-events: none;
+}
+
+/* smoke puff */
+.car-smoke {
+    position: absolute;
+    width: 1.5vh;
+    height: 1.5vh;
+    background: rgba(180,180,180,1);
+    border-radius: 50%;
+    animation: carSmokePuff 2.4s ease-out forwards;
+}
+
+@keyframes carSmokePuff {
+    0%   { transform: translateX(-1vh) translateY(0vh) scale(0.8); opacity: 0.9; }
+    40%  { opacity: 1; }
+    100% { transform: translateX(-12vh) translateY(-1.7vh) scale(2.5); opacity: 0; }
+}
+
+@keyframes carCycle {
+    0% {left: -30vh;transform: scaleX(1) rotate(0deg); /* NO wheelie */}
+    40% {left: 110%;  transform: scaleX(1) rotate(0deg); /* stays flat */}
+    /* -----------------------
+       TURN AROUND (very small tilt)
+       ----------------------- */
+    45% {left: 110%; transform: scaleX(1) rotate(0deg);  /* tiny tilt, optional */ }
+    50% {left: 110%;transform: scaleX(-1) rotate(-4deg); /* face left */}
+    /* -----------------------
+       MOVE LEFT (slow, uniform)
+       ----------------------- */
+    90% {left: -30vh;transform: scaleX(-1) rotate(0deg); /* stays flat */}
+    /* -----------------------
+       TURN AGAIN BACK TO RIGHT
+       ----------------------- */
+    95% { left: -30vh;transform: scaleX(-1) rotate(0deg);}
+    100% {left: -30vh;transform: scaleX(1) rotate(0deg); /* ready again */ }
+}
+
+
+
+.car-track-shadow{
+position:absolute;
+bottom:.5vh;
+left:6vh;
+width:12vh;
+height:.4vh;
+background:rgba(0,0,0,.25);
+filter:blur(0.3vh);
+border-radius:.3vh;
+z-index:0;
+}
+@keyframes carTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-2vh 0;}
+}
+
+
+
+/* =====================================================================
+   SCOOTER – FIXED VERSION
+===================================================================== */
+
+.scooter {
+    transform-origin: 4vh 100%;
+}
+
+.scooter img {
+    width: 100%;
+}
+
+.scooter-smoke-container {
+    position: absolute;
+    top: 9vh;       /* behind engine */
+    left: -1vh;
+    pointer-events: none;
+}
+
+.scooter-smoke {
+    position: absolute;
+    width: 1vh;
+    height: 1vh;
+    background: rgba(160,160,160,0.2);
+    border-radius: 50%;
+    animation: scooterSmokePuff 1.4s ease-out forwards;
+}
+
+@keyframes scooterSmokePuff {
+    0%   { transform: translateX(0) translateY(0) scale(0.7); opacity: 1; }
+    100% { transform: translateX(-6vh) translateY(-1vh) scale(1.7); opacity: 0; }
+}
+
+@keyframes scooterCycle{
+0%{left:-30vh;transform:scaleX(1)rotate(deg);}
+5%{left:-10vh;transform:scaleX(1)rotate(0deg);}
+10%{left:10vh;transform:scaleX(1)rotate(-18deg);}
+20%{left:40vh;transform:scaleX(1)rotate(-18deg);}
+25%{left:25vh;transform:scaleX(1)rotate(0deg);}
+55%{left:210vh;transform:scaleX(1)rotate(0deg);}
+60%{left:210vh;transform:scaleX(-1)rotate(0deg);}
+90%{left:0vh;transform:scaleX(-1)rotate(0deg);}
+100%{left:-50vh;transform:scaleX(-1)rotate(0deg);}
+}
+
+
+.scooter-track-shadow{
+position:absolute;
+bottom:.6vh;
+left:0vh;
+width:16vh;
+height:.4vh;
+background:rgba(0,0,0,.3);
+filter:blur(0.3vh);
+border-radius:.3vh;
+z-index:0;
+}
+@keyframes scooterTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-2vh 0;}
+}
+
+
+/* =====================================================================
+   TANK
+===================================================================== */
+
+.tank img {
+    width: 100%;
+}
+
+.tank-smoke-container {
+    position: absolute;
+    top: 7vh;
+    left: 1vh;
+}
+
+.tank-smoke {
+    position: absolute;
+    width: 1.5vh;
+    height: 1.5vh;
+    background: rgba(80,80,80,0.8);
+    border-radius: 50%;
+    animation: tankSmokePuff 3s ease-out forwards;
+}
+
+@keyframes tankSmokePuff {
+    0%   { transform: translateX(-2vh) translateY(0vh) scale(0.8); opacity: 1; }
+    100% { transform: translateX(-14vh) translateY(-2vh) scale(3); opacity: 0; }
+}
+
+@keyframes tankCycle {
+    0%   { left: -30vh; transform: scaleX(1); }
+    45%  { left: 110vh; transform: scaleX(1); }
+    50%  { transform: scaleX(-1); }
+    95%  { left: -30vh; transform: scaleX(-1); }
+    100% { transform: scaleX(1); }
+}
+
+.tread{
+width:3vh;
+height:3vh;
+position:absolute;
+bottom:1.3vh;
+border-radius:50%;
+background:radial-gradient(circle at center,#000 0 30%,#777 31% 60%,#000 61% 100%);
+animation:treadSpin .35s linear infinite;
+z-index:2;
+}
+@keyframes treadSpin{
+0%{transform:rotate(0);}
+100%{transform:rotate(360deg);}
+}
+
+
+.tank-track-shadow{
+position:absolute;
+bottom:0;
+left:.2vh;
+width:19.5vh;
+height:.8vh;
+background:rgba(0,0,0,.4);
+filter:blur(2px);
+border-radius:1vh;
+z-index:0;
+}
+@keyframes tankTrackMove{
+0%{background-position:0 0;}
+100%{background-position:-3vh 0;}
+}
+
+
+.tank .tread:nth-child(4){left:2vh;}
+.tank .tread:nth-child(5){left:5.2vh;}
+.tank .tread:nth-child(6){left:8.4vh;}
+.tank .tread:nth-child(7){left:11.6vh;}
+.tank .tread:nth-child(8){left:14.8vh;}
+
+
+
+
+
+
+@keyframes treadSpin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+
+/* =====================================================================
+   FERRY
+===================================================================== */
+
+.ferry-wrapper {
+    position: absolute;
+    bottom: 20vh;
+    width: 26vh;
+    left: -30vh;
+    opacity: 0;
+}
+.ferry {
+    width: 26vh;
+}
+
+.ferry-smoke-container {
+    position: absolute;
+    top: -0.2vh;
+    left: 8vh;
+}
+
+.ferry-smoke {
+    position: absolute;
+    width: 2vh;
+    height: 2vh;
+    border-radius: 50%;
+    background: rgba(200,200,200,0.5);
+    animation: smokePuff 2s ease-out forwards;
+}
+
+@keyframes smokePuff {
+    0%   { transform: translateX(-2vh) translateY(0vh) scale(0.8); opacity: 1; }
+    100% { transform: translateX(-14vh) translateY(-2vh) scale(3); opacity: 0; }
+}
+
+@keyframes ferryCycle {
+    0%   { left:-40vh; transform:scaleX(1); }
+    50%  { left:110vh; transform:scaleX(1); }
+    55%  { transform:scaleX(-1); }
+    100% { transform:scaleX(-1); }
+}
+@keyframes ferryBob {
+    0%,100%{ bottom:20vh }
+    50%{ bottom:22vh }
+}
+
+
+.ferry-wake{
+position:absolute;
+bottom:-1vh;
+left:-4vh;
+width:32vh;
+height:2vh;
+background:repeating-linear-gradient(90deg,rgba(255,255,255,.7) 0 .7vh,rgba(0, 158, 248, 0.8) .7vh 1.4vh);
+border-radius:1vh;
+opacity:.9;
+filter:blur(1vh);
+animation:ferryWakeMove .5s linear infinite;
+z-index:0;
+}
+@keyframes ferryWakeMove{
+0%{background-position:0 0;}
+100%{background-position:-3vh 0;}
+}
+
+
+
+
+
+
+
+
+
+
+/* =====================================================================
+   FLIPFLOP — REAL 2% WALK STEPPING
+===================================================================== */
+
+.flipflop {
+    width: 14vh;
+    bottom: 20vh;
+    opacity: 0;
+    animation-timing-function: steps(1);
+}
+
+@keyframes flipflopCycle {
+
+    0% { opacity:0; left:-30vh; transform:scaleX(1); }
+
+    /* RIGHT WALK */
+    3%  { opacity:1; left:-30vh; transform:scaleX(1) translateY(-1vh) rotate(-4deg); }
+    5%  { opacity:1; left:-30vh; transform:scaleX(1) translateY(-0.5vh) rotate(2deg); }
+    7%  { opacity:1; left:-30vh; transform:scaleX(1) translateY(0vh) rotate(4deg); }
+    9%  { opacity:1; left:-30vh; transform:scaleX(1) translateY(-0.5vh) rotate(-2deg); }
+    9.01% { opacity:0; left:-24vh; }
+
+    13% { opacity:1; left:-24vh; transform:scaleX(1) translateY(-1vh) rotate(4deg); }
+    15% { opacity:1; left:-24vh; transform:scaleX(1) translateY(-0.5vh) rotate(-2deg); }
+    17% { opacity:1; left:-24vh; transform:scaleX(1) translateY(0) rotate(2deg); }
+    19% { opacity:1; left:-24vh; transform:scaleX(1) translateY(-0.5vh) rotate(-4deg); }
+    19.01% { opacity:0; left:-16vh; }
+
+    23% { opacity:1; left:-16vh; transform:scaleX(1) translateY(-1vh) rotate(-4deg); }
+    25% { opacity:1; left:-16vh; transform:scaleX(1) translateY(-0.5vh) rotate(2deg); }
+    27% { opacity:1; left:-16vh; transform:scaleX(1) translateY(0) rotate(4deg); }
+    29% { opacity:1; left:-16vh; transform:scaleX(1) translateY(-0.5vh) rotate(-2deg); }
+    29.01% { opacity:0; left:-8vh; }
+
+    33% { opacity:1; left:-8vh; transform:scaleX(1) translateY(-1vh) rotate(4deg); }
+    35% { opacity:1; left:-8vh; transform:scaleX(1) translateY(-0.5vh) rotate(-2deg); }
+    37% { opacity:1; left:-8vh; transform:scaleX(1) translateY(0) rotate(2deg); }
+    39% { opacity:1; left:-8vh; transform:scaleX(1) translateY(-0.5vh) rotate(-4deg); }
+    39.01% { opacity:0; left:4vh; }
+
+    /* TURN */
+    40% { opacity:0; transform:scaleX(-1); }
+
+    /* LEFT WALK */
+    44% { opacity:1; left:4vh; transform:scaleX(-1) translateY(-1vh) rotate(-4deg); }
+    46% { opacity:1; left:4vh; transform:scaleX(-1) translateY(-0.5vh) rotate(2deg); }
+    48% { opacity:1; left:4vh; transform:scaleX(-1) translateY(0) rotate(4deg); }
+    50% { opacity:1; left:4vh; transform:scaleX(-1) translateY(-0.5vh) rotate(-2deg); }
+    50.01% { opacity:0; left:-8vh; }
+
+    54% { opacity:1; left:-8vh; transform:scaleX(-1) translateY(-1vh) rotate(4deg); }
+    56% { opacity:1; left:-8vh; transform:scaleX(-1) translateY(-0.5vh) rotate(-2deg); }
+    58% { opacity:1; left:-8vh; transform:scaleX(-1) translateY(0) rotate(2deg); }
+    60% { opacity:1; left:-8vh; transform:scaleX(-1) translateY(-0.5vh) rotate(-4deg); }
+    60.01% { opacity:0; left:-16vh; }
+
+    64% { opacity:1; left:-16vh; transform:scaleX(-1) translateY(-1vh) rotate(4deg); }
+    66% { opacity:1; left:-16vh; transform:scaleX(-1) translateY(-0.5vh) rotate(-2deg); }
+    68% { opacity:1; left:-16vh; transform:scaleX(-1) translateY(0) rotate(2deg); }
+    70% { opacity:1; left:-16vh; transform:scaleX(-1) translateY(-0.5vh) rotate(-4deg); }
+    70.01% { opacity:0; left:-24vh; }
+
+    100% { opacity:0; left:-30vh; transform:scaleX(1); }
+}
+</style>
+</head>
+
+<body onclick="startSequence()">
+
+
+
+<div class="animation-area">
+
+    <!-- CAR (wrapper) -->
+    <div class="vehicle car" data-sound="media/car.mp3">
+    <div class="car-track"></div>
+    <div class="car-track-shadow"></div>
+    <img src="media/car.png" class="car-img">
+    <div class="car-smoke-container"></div>
+</div>
+
+
+    <!-- SCOOTER (wrapper) -->
+    <div class="vehicle scooter" data-sound="media/scooter.mp3">
+    <div class="scooter-track"></div>
+    <div class="scooter-track-shadow"></div>
+    <img src="media/scooter.png">
+    <div class="scooter-smoke-container"></div>
+</div>
+
+
+    <!-- TANK (wrapper) -->
+    <div class="vehicle tank" data-sound="media/tank.mp3">
+    <div class="tank-track"></div>
+    <div class="tank-track-shadow"></div>
+    <img src="media/tank.png">
+    <div class="tread"></div>
+    <div class="tread"></div>
+    <div class="tread"></div>
+    <div class="tread"></div>
+    <div class="tread"></div>
+    <div class="tank-smoke-container"></div>
+</div>
+
+
+
+
+    <!-- FERRY (wrapper) -->
+  <div class="vehicle ferry-wrapper" data-sound="media/ferry.mp3">
+    <div class="ferry-wake-shadow"></div>
+    <div class="ferry-wake"></div>
+    <img src="media/ferry.png" class="ferry">
+    <div class="ferry-smoke-container"></div>
+</div>
+
+
+    <!-- FLIPFLOP -->
+    <div class="vehicle flipflop" data-sound="media/flipflop.mp3">
+        <img src="media/flipflop.png" style="width:100%;">
+    </div>
+
+</div>
+
+<script>
+
+/* ======================================================
+   SMOKE FUNCTIONS
+===================================================== */
+
+function emitFerrySmoke(wrapper) {
+    const c = wrapper.querySelector(".ferry-smoke-container");
+    const p = document.createElement("div");
+    p.className = "ferry-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+}
+
+function emitCarSmoke(wrapper) {
+    const c = wrapper.querySelector(".car-smoke-container");
+    const p = document.createElement("div");
+    p.className = "car-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 2400);
+}
+
+function emitScooterSmoke(wrapper) {
+    const c = wrapper.querySelector(".scooter-smoke-container");
+    const p = document.createElement("div");
+    p.className = "scooter-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+}
+
+function emitTankSmoke(wrapper) {
+    const c = wrapper.querySelector(".tank-smoke-container");
+    const p = document.createElement("div");
+    p.className = "tank-smoke";
+    c.appendChild(p);
+    setTimeout(() => p.remove(), 3000);
+}
+
+/* ======================================================
+   VEHICLE SEQUENCE ENGINE
+===================================================== */
+
+let items = [
+{ el: document.querySelector(".ferry-wrapper"), anim:"ferryCycle 30s linear forwards, ferryBob 30s ease-in-out infinite", dur:22000 },
+{ el: document.querySelector(".scooter"), anim:"scooterCycle 11s linear forwards", dur:11000 },
+{ el: document.querySelector(".car"), anim:"carCycle 25s linear forwards", dur:25000 },
+{ el: document.querySelector(".tank"), anim:"tankCycle 40s linear forwards", dur:40000 },
+
+    { el: document.querySelector(".flipflop"), anim:"flipflopCycle 16s steps(1) forwards", dur:16000 }
+];
+
+let index = 0;
+
+function playVehicle(i) {
+    let v = items[i].el;
+    let anim = items[i].anim;
+    let dur = items[i].dur;
+
+    v.style.opacity = 1;
+    v.style.left = "-30vh";
+
+    v.style.animation = "none";
+    void v.offsetWidth;
+    v.style.animation = anim;
+
+    let sound = new Audio(v.dataset.sound);
+    sound.loop = true;
+    sound.play();
+
+    /* smoke triggers */
+    if (v.classList.contains("car")) 
+        v._smoke = setInterval(() => emitCarSmoke(v), 350);
+
+    if (v.classList.contains("scooter")) 
+        v._smoke = setInterval(() => emitScooterSmoke(v), 200);
+
+    if (v.classList.contains("tank")) 
+        v._smoke = setInterval(() => emitTankSmoke(v), 300);
+
+    if(v.classList.contains("ferry-wrapper")){
+    v._smoke = setInterval(() => emitFerrySmoke(v),350);
+    v.querySelector(".ferry-wake").style.animationPlayState="running";
+    v.querySelector(".ferry-wake-shadow").style.animationPlayState="running";}
+
+
+    /* sequence end */
+    setTimeout(() => {
+
+        sound.pause();
+        sound.currentTime = 0;
+
+        v.style.opacity = 0;
+        v.style.animation = "none";
+
+        if (v._smoke) {
+            clearInterval(v._smoke);
+            v._smoke = null;
+        }
+
+        index = (index + 1) % items.length;
+        setTimeout(() => playVehicle(index), 300);
+
+    }, dur);
+}
+
+function startSequence() {
+    playVehicle(index);
+    document.body.onclick = null;
+}
+
+</script>
+
+</body>
+</html>
