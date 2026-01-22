@@ -393,5 +393,71 @@ button {
 
 }
 
+/* =====================================================
+   MOBILE ORDERING — UI FLOW REARRANGE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Ensure vertical stacking */
+  .layout,
+  .left-panel,
+  .center-panel,
+  .far-right-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------------------------------
+     TOP SECTION
+  ---------------------------------- */
+
+  /* Radio (comes first) */
+  .far-right-panel {
+    order: 1;
+  }
+
+  /* Chance + Community */
+  .center-panel .bottom-buttons {
+    order: 2;
+  }
+
+  /* ---------------------------------
+     MONOPOLY (WELCOME CARD)
+  ---------------------------------- */
+  #welcomeCard {
+    order: 3;
+  }
+
+  /* ---------------------------------
+     BOTTOM GAME ACTIONS
+  ---------------------------------- */
+
+  .left-panel {
+    order: 4;
+  }
+
+  /* Individual button order inside left panel */
+  .left-panel .restaurant-btn { order: 1; }
+  .left-panel .park-btn       { order: 2; }
+  .left-panel .mall-btn       { order: 3; }
+  .left-panel .casino-btn    { order: 4; }
+  .left-panel .farm-btn      { order: 5; }
+
+  /* ---------------------------------
+     Spacing polish
+  ---------------------------------- */
+  .left-panel,
+  .center-panel,
+  .far-right-panel {
+    gap: 12px;
+  }
+
+  .bottom-buttons {
+    gap: 12px;
+  }
+
+}
+
 
 
