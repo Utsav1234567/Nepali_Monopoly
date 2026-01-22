@@ -1,0 +1,337 @@
+/* =========================================
+   MOBILE RESPONSIVE OVERRIDES
+   Drop-in file — no JS changes required
+========================================= */
+
+/* ----- Global mobile fixes ----- */
+html, body {
+  height: auto;
+  overflow-x: hidden;
+}
+
+body {
+  padding: 12px;
+}
+
+/* Prevent hover effects on touch */
+@media (hover: none) {
+  *:hover {
+    transform: none !important;
+  }
+}
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+@media (max-width: 768px) {
+
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+  }
+
+  .left-panel,
+  .center-panel,
+  .far-right-panel {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+
+  .far-right-panel {
+    padding-top: 0;
+  }
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+@media (max-width: 768px) {
+
+  .draw-btn,
+  .big-btn {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    padding: 14px 16px;
+    font-size: clamp(16px, 4vw, 20px);
+    border-radius: 16px;
+  }
+
+  .icon {
+    font-size: 1.6em;
+  }
+
+  .bottom-buttons {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+  }
+}
+
+/* =========================================
+   WELCOME CARD
+========================================= */
+@media (max-width: 768px) {
+
+  #welcomeCard {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  #welcomeTitle {
+    font-size: clamp(22px, 6vw, 30px);
+  }
+
+  #welcomeTitle .subtitle {
+    font-size: clamp(14px, 4vw, 18px);
+  }
+
+  #welcomeText {
+    font-size: clamp(14px, 4vw, 18px);
+  }
+}
+
+/* =========================================
+   DICE SCALE
+========================================= */
+@media (max-width: 768px) {
+
+  #welcomeCard .dice-wrap {
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  #welcomeCard .dice-scene {
+    width: 64px;
+    height: 64px;
+  }
+
+  #welcomeCard .cube .f1,
+  #welcomeCard .cube .f2,
+  #welcomeCard .cube .f3,
+  #welcomeCard .cube .f4,
+  #welcomeCard .cube .f5,
+  #welcomeCard .cube .f6 {
+    transform: translateZ(32px);
+  }
+}
+
+/* =========================================
+   MODALS / POPUPS
+========================================= */
+@media (max-width: 768px) {
+
+  .modal {
+    width: min(92vw, 520px);
+    max-height: 80vh;
+    padding: 16px;
+    border-radius: 16px;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+
+  .modal p {
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1.4;
+  }
+
+  .close-btn {
+    font-size: 24px;
+  }
+}
+
+/* =========================================
+   EVENT LOG
+========================================= */
+@media (max-width: 768px) {
+
+  #eventLog {
+    position: fixed;
+    top: 10%;
+    right: 4%;
+    width: 92%;
+    max-height: 80vh;
+    font-size: 14px;
+    z-index: 999999;
+  }
+}
+
+/* =========================================
+   MONOPOLY BANNER
+========================================= */
+@media (max-width: 768px) {
+
+  .monopoly-banner {
+    font-size: clamp(24px, 8vw, 36px);
+    padding: 10px 16px;
+    letter-spacing: 0.15em;
+  }
+
+  .monopoly-guy-overlap {
+    height: 72px;
+    transform: translateX(90%) translateY(10%);
+  }
+}
+
+/* =========================================
+   VEHICLES (prevent oversized motion)
+========================================= */
+@media (max-width: 768px) {
+
+  .vehicle {
+    width: 64px !important;
+  }
+
+  .vehicle.tank {
+    width: 90px !important;
+  }
+
+  .vehicle.ferry-wrapper {
+    width: 120px !important;
+  }
+}
+
+/* =========================================
+   TOUCH OPTIMIZATION
+========================================= */
+button {
+  touch-action: manipulation;
+}
+
+
+/* =====================================================
+   MOBILE MOTION CONSTRAINTS
+   Keeps animations inside viewport
+===================================================== */
+
+@media (max-width: 768px) {
+
+  /* ---------------------------------
+     SAFE VIEWPORT VARIABLES
+  ---------------------------------- */
+  :root {
+    --vw-safe: 100vw;
+    --vh-safe: 100svh; /* avoids mobile address-bar jump */
+  }
+
+  /* =================================
+     PARROT CONSTRAINTS
+  ================================= */
+
+  #parrot {
+    width: 96px;
+    height: 96px;
+    left: 50%;
+    top: 12%;
+    transform: translateX(-50%);
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  /* Clamp parrot jumps */
+  @keyframes jump {
+    0%   { transform: translate(-50%, 0); }
+    40%  { transform: translate(-50%, -30vh); }
+    100% { transform: translate(-50%, 0); }
+  }
+
+  /* =================================
+     TRANSPORT STAGE BOUNDS
+  ================================= */
+
+  #transportStage {
+    inset: 0;
+    overflow: hidden;
+  }
+
+  /* =================================
+     VEHICLE SIZE (mobile-safe)
+  ================================= */
+
+  .vehicle {
+    bottom: 2vh;
+    max-width: 30vw;
+  }
+
+  .vehicle.car,
+  .vehicle.scooter {
+    width: 72px !important;
+  }
+
+  .vehicle.tank {
+    width: 100px !important;
+  }
+
+  .vehicle.ferry-wrapper {
+    width: 140px !important;
+    bottom: 10vh !important;
+  }
+
+  .vehicle.boomerang-hat {
+    width: 72px !important;
+    bottom: 8vh !important;
+  }
+
+  /* =================================
+     VEHICLE EXIT CLAMPS
+     (override animation distances)
+  ================================= */
+
+  @keyframes carCycle {
+    0%   { left: -25vw; }
+    40%  { left: 100vw; }
+    50%  { transform: scaleX(-1); }
+    90%  { left: -25vw; }
+    100% { transform: scaleX(1); }
+  }
+
+  @keyframes scooterCycle {
+    0%   { left: -25vw; }
+    60%  { left: 100vw; }
+    100% { left: -25vw; transform: scaleX(-1); }
+  }
+
+  @keyframes tankCycle {
+    0%   { left: -30vw; }
+    45%  { left: 100vw; }
+    50%  { transform: scaleX(-1); }
+    95%  { left: -30vw; }
+    100% { transform: scaleX(1); }
+  }
+
+  @keyframes ferryCycle {
+    0%   { left: -40vw; }
+    50%  { left: 100vw; }
+    55%  { transform: scaleX(-1); }
+    100% { left: -40vw; }
+  }
+
+  @keyframes boomerangHat {
+    0%   { left: -30vw; opacity: 1; }
+    50%  { left: 50vw; transform: rotate(180deg); }
+    100% { left: 110vw; opacity: 0; }
+  }
+
+  /* =================================
+     SMOKE & EFFECT CLAMPS
+  ================================= */
+
+  .car-smoke,
+  .scooter-smoke,
+  .tank-smoke,
+  .ferry-smoke {
+    max-width: 12px;
+    max-height: 12px;
+  }
+
+}
