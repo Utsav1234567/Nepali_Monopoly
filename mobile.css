@@ -397,67 +397,59 @@ button {
    MOBILE ORDERING — UI FLOW REARRANGE
 ===================================================== */
 
+/* =====================================================
+   MOBILE FINAL LAYOUT — VERIFIED
+===================================================== */
+
 @media (max-width: 768px) {
 
-  /* Ensure vertical stacking */
-  .layout,
-  .left-panel,
-  .center-panel,
-  .far-right-panel {
+  /* ---------- MAIN STACK ---------- */
+  .layout {
     display: flex;
     flex-direction: column;
+    gap: 16px;
   }
 
-  /* ---------------------------------
-     TOP SECTION
-  ---------------------------------- */
-
-  /* Radio (comes first) */
-  .far-right-panel {
-    order: 1;
+  /* ---------- TOP ACTIONS ---------- */
+  .top-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
   }
 
-  /* Chance + Community */
-  .center-panel .bottom-buttons {
+  /* ---------- MONOPOLY ---------- */
+  .center-panel {
     order: 2;
   }
 
-  /* ---------------------------------
-     MONOPOLY (WELCOME CARD)
-  ---------------------------------- */
-  #welcomeCard {
-    order: 3;
-  }
-
-  /* ---------------------------------
-     BOTTOM GAME ACTIONS
-  ---------------------------------- */
-
-  .left-panel {
-    order: 4;
-  }
-
-  /* Individual button order inside left panel */
-  .left-panel .restaurant-btn { order: 1; }
-  .left-panel .park-btn       { order: 2; }
-  .left-panel .mall-btn       { order: 3; }
-  .left-panel .casino-btn    { order: 4; }
-  .left-panel .farm-btn      { order: 5; }
-
-  /* ---------------------------------
-     Spacing polish
-  ---------------------------------- */
-  .left-panel,
-  .center-panel,
-  .far-right-panel {
+  /* ---------- BOTTOM ACTIONS (2 COLUMNS) ---------- */
+  .bottom-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
   }
 
-  .bottom-buttons {
-    gap: 12px;
+  /* Full-width Farm button */
+  .bottom-actions .farm-btn {
+    grid-column: span 2;
   }
 
+  /* Normalize button sizing */
+  .top-actions .draw-btn,
+  .top-actions .big-btn,
+  .bottom-actions .draw-btn {
+    width: 100%;
+    height: auto;
+    padding: 14px;
+    font-size: 16px;
+  }
 }
+
+
 
 
 
