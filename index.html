@@ -2520,22 +2520,23 @@ function stopSound(a) {
         </div>
 
         <!-- RESTORED CHANCE / COMMUNITY BUTTONS -->
-        <div class="bottom-buttons">
-            <button class="big-btn big-chance" onclick="drawChance()">
-                <div class="icon">❓</div>Chance
-            </button>
+        <!-- TOP ACTIONS (RADIO + CHANCE + COMMUNITY) -->
+<div class="top-actions">
 
-            <button class="big-btn big-community" onclick="drawCommunity()"><img src="media/community.png" class="tile-icon">Community
-</button>
+    <button class="draw-btn radio-btn" onclick="drawRadio()">
+        <img src="media/radio.png" class="tile-icon">Radio
+    </button>
 
-        </div>
-    </div>
+    <button class="big-btn big-chance" onclick="drawChance()">
+        <div class="icon">❓</div>Chance
+    </button>
 
-    <!-- RIGHT SIDE (RADIO BUTTON) -->
-    <div class="far-right-panel">
-        <button class="draw-btn radio-btn" onclick="drawRadio()"><img src="media/radio.png" class="tile-icon">Radio</button>
+    <button class="big-btn big-community" onclick="drawCommunity()">
+        <img src="media/community.png" class="tile-icon">Community
+    </button>
 
-    </div>
+</div>
+
 
 </div>
 
@@ -4885,6 +4886,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
