@@ -105,13 +105,7 @@ margin-top: 5vh;
 }
 
 /* RIGHT PANEL */
-.far-right-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 16vh;
-right: -2vh;
-}
+
 
 /* =========================================
    WELCOME CARD
@@ -198,21 +192,14 @@ width: 30vh;
 
 
 /* Chance/Community bottom buttons */
-.bottom-buttons {
-    display: flex;
-    gap: 3vh;
-}
+
 
 .big-btn {
     width: 45vh;     /* chance and community buttons */
 }
 
 
-.far-right-panel .draw-btn {
-    height: 13vh;   /* Radio buttons */
-width: 30vh;
-margin: 12vh;
-}
+
 
 
 
@@ -317,13 +304,7 @@ height:32vh;
         width: 45%;
     }
 
-    .bottom-buttons {
-        flex-wrap: wrap;
-    }
-
-    .far-right-panel {
-        padding-top: 10px;
-    }
+ 
 }
 
 
@@ -372,13 +353,7 @@ height:32vh;
 
 .layout,
 .center-panel,
-.far-right-panel {
-    overflow: visible !important;
-}
 
-.far-right-panel {
-    position: relative;
-}
 
 
 
@@ -2031,16 +2006,8 @@ padding: 5px 15px;
 
   .left-panel,
   .center-panel,
-  .far-right-panel {
-    width: 100%;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-  }
+ 
 
-  .far-right-panel {
-    padding-top: 0;
-  }
 
   /* ---------- BUTTONS ---------- */
   .draw-btn,
@@ -2061,11 +2028,7 @@ padding: 5px 15px;
     height: 32px;
   }
 
-  .bottom-buttons {
-    flex-direction: column;
-    width: 100%;
-    gap: 12px;
-  }
+
 
   /* ---------- WELCOME CARD ---------- */
   #welcomeCard {
@@ -2521,8 +2484,8 @@ function stopSound(a) {
 
         <!-- RESTORED CHANCE / COMMUNITY BUTTONS -->
         <!-- TOP ACTIONS (RADIO + CHANCE + COMMUNITY) -->
+<!-- TOP ACTIONS -->
 <div class="top-actions">
-
     <button class="draw-btn radio-btn" onclick="drawRadio()">
         <img src="media/radio.png" class="tile-icon">Radio
     </button>
@@ -2534,9 +2497,22 @@ function stopSound(a) {
     <button class="big-btn big-community" onclick="drawCommunity()">
         <img src="media/community.png" class="tile-icon">Community
     </button>
-
 </div>
 
+
+
+<!-- BOTTOM ACTIONS -->
+<div class="bottom-actions">
+    <button class="draw-btn restaurant-btn" onclick="drawRestaurant()">...</button>
+    <button class="draw-btn park-btn" onclick="drawParkMultiplier()">...</button>
+    <button class="draw-btn mall-btn" onclick="openShoppingMall()">...</button>
+    <button class="draw-btn casino-btn" onclick="openCasino()">...</button>
+    <button class="draw-btn farm-btn" onclick="openFarm()">...</button>
+</div>
+
+
+
+		
 
 </div>
 
@@ -4886,6 +4862,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
